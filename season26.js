@@ -36,7 +36,7 @@ function renderSlide(){
  const s=slides[feature];const previous=hero.dataset.feature;hero.dataset.feature=feature;
  if(previous!==undefined&&previous!==String(feature)&&!matchMedia('(prefers-reduced-motion: reduce)').matches){hero.querySelector('.heroCopy').animate([{opacity:.25,transform:'translateY(5px)'},{opacity:1,transform:'translateY(0)'}],{duration:360,easing:'ease-out'})}
  const wrap=hero.querySelector('.campaignArt');let art=wrap.lastElementChild;
- const url=leagueState?.features[feature].image||(feature===0?'/boltz-league-match-centre/assets/lineup-campaign.webp':'/boltz-league-match-centre/assets/fox-campaign.webp');
+ const url=leagueState?.features[feature].image||(feature===0?'/assets/lineup-campaign.webp':'/assets/fox-campaign.webp');
  if(art.getAttribute('src')!==url){const next=new Image();next.src=url;next.alt='';next.className='incoming';wrap.append(next);art=next;
  const reveal=()=>{if(next!==wrap.lastElementChild)return;requestAnimationFrame(()=>next.classList.add('shown'));setTimeout(()=>{if(next===wrap.lastElementChild){while(wrap.firstElementChild!==next)wrap.firstElementChild.remove();next.className=''}},650)};
  next.decode().then(reveal).catch(reveal)}
@@ -66,7 +66,7 @@ function matchPoster(m,source) {
  const live=m.status==='live' && source==='upcoming';
  const status=live?'LIVE':m.status==='scheduled'?'KICK-OFF':source==='upcoming'?'FULL TIME':'ARCHIVE';
  const sides=[m.home,m.away];
- const teamArt=n=>leagueState?.clubs[clean(n)]?.image || (contenders.includes(clean(n))?'/boltz-league-match-centre/assets/club-'+clean(n)+'.webp':'/boltz-league-match-centre/assets/hero.webp');
+ const teamArt=n=>leagueState?.clubs[clean(n)]?.image || (contenders.includes(clean(n))?'/assets/club-'+clean(n)+'.webp':'/assets/hero.webp');
  const score=m.status==='scheduled'?(m.kickoff||'VS'):[m.home_score??'–',m.away_score??'–'].join(' – ');
  return '<article class="matchPoster" aria-label="'+esc(sides.join(' versus '))+'">'+sides.map((n,i)=>'<div class="posterSide side'+i+'"><img src="'+esc(teamArt(n))+'" alt=""><strong>'+crest(n)+esc(n)+'</strong></div>').join('')+'<div class="posterScore"><small class="'+(live?'onAir':'')+'">'+status+'</small><b>'+esc(score)+'</b><span>'+esc(m.venue||'')+'</span></div></article>';
 }

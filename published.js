@@ -21,7 +21,7 @@ async function syncLeague() {
   if (!response.ok) return;
   const {revision,state} = await response.json();
   if (revision === leagueRevision) return;
-  const media=p=>p?.startsWith('/media/')?'https://boltz-league-matchday.jpiyady.chatgpt.site'+p:p?.startsWith('/assets/')?'/boltz-league-match-centre'+p:p;
+  const media=p=>p?.startsWith('/media/')?'https://boltz-league-matchday.jpiyady.chatgpt.site'+p:p;
   const clubs=Object.fromEntries(Object.entries(state.clubs).map(([name,c])=>[name,{...c,image:media(c.image),scene:c.scene&&{...c.scene,poster:media(c.scene.poster),clip:media(c.scene.clip)}}]));
   applyLeague({...state,clubs,features:state.features.map(f=>({...f,image:media(f.image)}))});
   leagueRevision = revision;
@@ -46,7 +46,7 @@ function clubProfile(name){
  const bio=defaults && prior && c.bio===prior[1]?defaults.bio:c.bio==='Season 6 squad.'?'Season 26 squad.':c.bio;
  const scene=c.scene||{};
  const selected=Boolean(scene.player && scene.poster);
- const poster=selected?scene.poster:'/boltz-league-match-centre/storyboard/'+name+'.webp';
+ const poster=selected?scene.poster:'/storyboard/'+name+'.webp';
  const clip=selected?scene.clip:null;
  const label=selected?scene.player+' · '+name+' FC':'Season 26 campaign artwork';
  const frame=!selected&&!defaults?'':'<figure class="profileFilm"><div class="filmFrame"><img class="filmStill" src="'+esc(poster)+'" alt="'+esc(selected?scene.player+' in the '+name+' FC kit':name+' FC scene preview')+'">'+

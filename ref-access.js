@@ -1,5 +1,5 @@
 (() => {
- const pagesHost = location.origin === 'https://johnbarsisa.github.io';
+ const pagesHost = location.origin === 'https://boltzleague.github.io';
  const service = pagesHost ? 'https://boltz-league-matchday.jpiyady.chatgpt.site' : location.origin;
  const route = () => /^#ref(?:[/?]|$)/.test(location.hash);
  const storageKey = 'boltz-league/ref-session';

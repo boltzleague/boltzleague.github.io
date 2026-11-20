@@ -5,7 +5,7 @@ let suppressClick = false;
 const showcase = document.querySelector('#showcase');
 const stage = showcase.querySelector('.clubStage');
 function clubImage(name) {
-  return leagueState?.clubs[name]?.image || '/boltz-league-match-centre/assets/club-' + name + '.webp';
+  return leagueState?.clubs[name]?.image || '/assets/club-' + name + '.webp';
 }
 function positionClubs() {
   const name = contenders[centre];
