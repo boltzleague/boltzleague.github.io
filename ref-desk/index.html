@@ -1,1 +1,28 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Boltz League Studio</title><link rel="stylesheet" href="studio.css?v=26.1"></head><body><header><div><small>SOFTTED FOOTBALL</small><h1>League Studio<span>.</span></h1></div><button id="signout" hidden>Lock Ref Area</button><a href="../">Match centre ↗</a></header><main><div class="toolbar"><strong>Season 26</strong><span id="revision">Connecting…</span><button id="publish" disabled>Publish changes ↗</button></div><div class="layout"><nav aria-label="Studio sections" id="tabs"></nav><section><div id="feedback" role="status"></div><div id="workspace">Loading season records…</div></section></div></main><script src="scene-briefs.js"></script><script type="module" src="studio.js?v=26.1"></script></body></html>
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ref Access | Boltz League</title>
+  <link rel="canonical" href="https://boltzleague.github.io/">
+  <link rel="icon" href="/assets/boltz.png">
+  <meta name="robots" content="noindex">
+  <script>
+    (() => {
+      const query = new URLSearchParams(location.search);
+      const match = query.get('match');
+      const section = query.get('section');
+      const route = '#ref' + (match ? '/' + encodeURIComponent(match) : '');
+      const suffix = ['teams', 'fixtures', 'live', 'database'].includes(section)
+        ? '?section=' + section : '';
+      location.replace('/' + route + suffix);
+    })();
+  </script>
+</head>
+<body>
+  <main>
+    <h1>Boltz League Ref Access</h1>
+    <p><a href="/#ref">Open Ref Access in the Match Centre</a></p>
+  </main>
+</body>
+</html>
