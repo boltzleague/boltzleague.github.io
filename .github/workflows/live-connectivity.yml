@@ -15,3 +15,7 @@ jobs:
           node-version: '22'
       - name: Probe GitHub Pages and live referee API without credentials
         run: node scripts/check-live-connectivity.mjs
+      - name: Install headless browser test client
+        run: npm install --no-save --no-audit --no-fund puppeteer-core@24.29.0
+      - name: Exercise public pages and live feed in Chrome
+        run: node scripts/check-browser.mjs
