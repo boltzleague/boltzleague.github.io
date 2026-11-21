@@ -43,3 +43,12 @@ body.embedded{color:var(--ink,#18212b);background:var(--bg,#f4f6f8)}
 .eventPlayerPicker button,.newEventPlayer button{min-height:44px}
 .eventPlayerPicker button{font-size:14px}.newEventPlayer{margin:12px 0;padding:14px;border:1px solid var(--rule,#a7b0bd);border-radius:8px}
 .eventFeedback:not(:empty){margin:12px 0;font-size:14px;font-weight:650}
+
+/* Matchday visibility and filtering, November 2026 */
+.matchFilters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0 16px}
+.matchFilters label{display:block;min-width:0;font-weight:700}
+.matchFilters select{width:100%;max-width:100%;min-height:44px;margin-top:6px}
+.fixtureRow .versus,.matchControl .versus{font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:.02em}
+.fixtureRow .fixtureStatus[data-status=completed]{font-weight:800}
+.matchControl .matchHeading .matchClockLabel{font-size:clamp(14px,1.8vw,18px);font-weight:800;white-space:nowrap;padding:10px 12px;min-width:130px;text-align:center}
+@media(max-width:650px){.matchFilters{grid-template-columns:1fr}.matchControl .matchHeading .matchClockLabel{min-width:0;width:100%}}

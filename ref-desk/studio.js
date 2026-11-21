@@ -24,6 +24,7 @@ let role='guest';
 const sectionTabs={teams:'Teams & squads',fixtures:'Fixtures',live:'Live matches',database:'Database control'};
 const tabs=[...Object.values(sectionTabs),'Homepage','Navigation'];
 let state,revision,dirty=false,busy=false,restoreSeasonStart=false,tab=sectionTabs[query.get('section')] || (query.has('match')?'Live matches':tabs[0]),club='Foxes',matchId,feature=0,eventSide,editEvent;
+let matchTeamFilter='',matchStatusFilter='',matchSortOrder='status',chooserOpen=false;
 if(!inline)window.boltzRefDirty=()=>dirty;
 const say=v=>$('feedback').textContent=v;
 const match=()=>state.matches.find(m=>m.id===matchId);
@@ -155,9 +156,34 @@ function crestBadge(name){
  const url=new URL('../assets/'+encodeURIComponent(key)+'.png',import.meta.url);
  return '<img class="teamCrest" alt="" src="'+escape(url.href)+'">';
 }
-function versus(home,away){return '<span class="matchTeams">'+teamLabel(home)+'<span class="versus">VS</span>'+teamLabel(away)+'</span>'}
+function versus(home,away,middle='VS'){return '<span class="matchTeams">'+teamLabel(home)+'<span class="versus">'+escape(middle)+'</span>'+teamLabel(away)+'</span>'}
 function teamLabel(name){return '<span class="teamLabel">'+crestBadge(name)+escape(state.clubs[chooseClub(name)]?.squadName||name)+'</span>'}
-function score(m){return [m.home,m.away].map(n=>m.events.filter(e=>(e.type==='goal'&&e.team===n)||(e.type==='own goal'&&e.team!==n)).length).join(' – ')}
+function score(m){return [m.home,m.away].map(n=>(m.events||[]).filter(e=>(e.type==='goal'&&e.team===n)||(e.type==='own goal'&&e.team!==n)).length).join(' – ')}
+
+function matchMinute(m){
+ if(m.status!=='live')return null;
+ const started=Date.parse(m.startedAt||'');
+ if(Number.isFinite(started)&&started<=Date.now())return Math.max(0,Math.floor((Date.now()-started)/60000));
+ const minutes=(m.events||[]).map(e=>Number(e.minute)).filter(n=>Number.isFinite(n)&&n>=0&&n<=240);
+ return minutes.length?Math.max(...minutes):null;
+}
+function matchMiddle(m){return m.status==='scheduled'?'VS':score(m)}
+function matchStatusText(m){
+ if(m.status==='scheduled')return 'Upcoming · '+(m.kickoff||'TBC');
+ if(m.status==='completed')return 'Full time';
+ const minute=matchMinute(m);
+ return minute===null?'LIVE':'LIVE · '+minute+'′';
+}
+function refreshMatchMinutes(){
+ if(!state?.matches)return;
+ root.querySelectorAll('[data-live-minute-id]').forEach(node=>{
+  const m=state.matches.find(x=>x.id===node.dataset.liveMinuteId);
+  if(m)node.textContent=matchStatusText(m);
+ });
+}
+const matchMinuteTicker=setInterval(refreshMatchMinutes,15000);
+lifetime.signal.addEventListener('abort',()=>clearInterval(matchMinuteTicker));
+
 function fixtureActions() {
  return '<div class="row fixtureActions" tabindex="-1"><button id="newMatch">Add fixture</button><button class="danger" id="deleteFixture">Delete selected fixture</button></div>';
 }
@@ -177,9 +203,29 @@ function fixtureView(){
 }
 function matchList(section) {
  const rank={live:0,scheduled:1,completed:2};
- const matches=[...state.matches].sort((a,b)=>rank[a.status]-rank[b.status]);
- const live=matches.filter(m=>m.status==='live').length;
- return '<details class="fixtureChooser"><summary>Choose a match <small>'+matches.length+' fixtures'+(live?' · '+live+' live':'')+'</small></summary><div class="matchList" aria-label="Season fixtures">'+matches.map(m=>'<button class="fixtureRow '+(m.id===matchId?'selected':'')+'" data-match="'+escape(m.id)+'" data-section="'+section+'" aria-pressed="'+(m.id===matchId)+'">'+versus(m.home,m.away)+'<span class="fixtureMeta">'+escape(m.round+' · '+m.kickoff+' · '+m.venue)+'</span><span class="fixtureStatus" data-status="'+escape(m.status)+'">'+escape(m.status==='scheduled'?'Scheduled':score(m)+' · '+m.status)+'</span><span class="fixtureEdit">'+(section==='live'?'Match control':'Edit fixture')+'</span></button>').join('')+'</div></details>';
+ const teams=Object.keys(state.clubs).map(n=>n+' FC').sort(collator.compare);
+ const filtered=state.matches.filter(m=>
+  (!matchTeamFilter||m.home===matchTeamFilter||m.away===matchTeamFilter)&&
+  (!matchStatusFilter||m.status===matchStatusFilter));
+ const byTime=(a,b)=>String(a.kickoff||'').localeCompare(String(b.kickoff||''))||
+  Number(a.round?.match(/\d+/)?.[0]||0)-Number(b.round?.match(/\d+/)?.[0]||0)||
+  String(a.venue||'').localeCompare(String(b.venue||''));
+ const matches=[...filtered].sort((a,b)=>{
+  if(matchSortOrder==='team')return collator.compare(a.home,b.home)||collator.compare(a.away,b.away)||byTime(a,b);
+  if(matchSortOrder==='kickoff')return byTime(a,b);
+  return rank[a.status]-rank[b.status]||byTime(a,b);
+ });
+ const live=state.matches.filter(m=>m.status==='live').length;
+ const filters='<div class="matchFilters">'+
+  '<label>Team<select id="matchTeamFilter"><option value="">All teams</option>'+teams.map(n=>'<option value="'+escape(n)+'"'+(matchTeamFilter===n?' selected':'')+'>'+escape(n)+'</option>').join('')+'</select></label>'+
+  '<label>Match status<select id="matchStatusFilter">'+[['','All matches'],['scheduled','Upcoming'],['live','Ongoing / Live'],['completed','Finished']].map(([value,label])=>'<option value="'+value+'"'+(matchStatusFilter===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label>'+
+  '<label>Sort by<select id="matchSortOrder">'+[['status','Live first'],['kickoff','Kick-off time'],['team','Team name A–Z']].map(([value,label])=>'<option value="'+value+'"'+(matchSortOrder===value?' selected':'')+'>'+label+'</option>').join('')+'</select></label>'+
+  '</div>';
+ return '<details class="fixtureChooser"'+(chooserOpen?' open':'')+'><summary>Choose a match <small>'+matches.length+' of '+state.matches.length+' fixtures'+(live?' · '+live+' live':'')+'</small></summary>'+
+  filters+
+  (matches.length?'<div class="matchList" aria-label="Season fixtures">'+matches.map(m=>'<button class="fixtureRow '+(m.id===matchId?'selected':'')+'" data-match="'+escape(m.id)+'" data-section="'+section+'" aria-pressed="'+(m.id===matchId)+'">'+versus(m.home,m.away,matchMiddle(m))+
+  '<span class="fixtureMeta">'+escape(m.round+' · '+m.kickoff+' · '+m.venue)+'</span><span class="fixtureStatus" data-status="'+escape(m.status)+'" data-live-minute-id="'+escape(m.id)+'">'+escape(matchStatusText(m))+'</span>'+
+  '<span class="fixtureEdit">'+(section==='live'?'Match control':'Edit fixture')+'</span></button>').join('')+'</div>':'<p class="hint">No fixtures match these filters.</p>')+'</details>';
 }
 function matchPanels(){
  return '<div class="matchPanels" role="group" aria-label="Match controls">'+[['logging','Ref logging'],['timeline','Timeline'],['lineups','Lineups']].map(([key,label])=>'<button data-panel="'+key+'" aria-pressed="'+(livePanel===key)+'">'+label+'</button>').join('')+'</div>';
@@ -257,7 +303,7 @@ function matchView(){const m=match();if(!m)return '<button id="newMatch">Add fix
  const sides=[m.home,m.away];if(!sides.includes(eventSide))eventSide=m.home;
  const recorded=m.events.find(x=>x.id===editEvent);
  const e={...recorded,player:recorded?.team===eventSide?recorded.player:'',assist:recorded?.team===eventSide?recorded.assist:'',minute:recorded?.minute??'',type:recorded?.type||'goal'};
- return matchList('live')+'<section class="card matchControl" id="matchControl" tabindex="-1"><div class="matchHeading">'+versus(m.home,m.away)+'<span class="score">'+(m.status==='scheduled'?'—':score(m))+'</span></div><p class="matchMeta"><span class="fixtureStatus" data-status="'+escape(m.status)+'">'+escape(m.status)+'</span> '+escape(m.round+' · '+m.kickoff+' · '+m.venue)+'</p>'+(m.status==='completed'?'':'<button id="matchClock">'+(m.status==='scheduled'?'Start match':'Finish match')+' &amp; publish</button>')+'</section>'+matchPanels()+'<div class="card" '+(livePanel==='timeline'?'':'hidden')+'><h3>Match timeline</h3><ol class="events">'+m.events.map(x=>'<li>'+escape([x.minute===''?'':x.minute+'′',eventIcons[x.type]+' '+x.type,x.team,x.player,x.assist?'assist '+x.assist:''].filter(Boolean).join(' · '))+' <button data-edit="'+escape(x.id)+'">Edit</button><button data-remove="'+escape(x.id)+'">Remove</button></li>').join('')+(m.events.length?'':'<li>No events recorded yet.</li>')+'</ol></div><div class="card" '+(livePanel==='logging'?'':'hidden')+'><h3>Ref logging</h3><div class="eventTeamButtons">'+sides.map(side=>'<button data-event-team="'+escape(side)+'" aria-pressed="'+(side===eventSide)+'">'+teamLabel(side)+'</button>').join('')+'</div>'+eventForm(e)+'</div><div class="card" id="startingLineups" tabindex="-1" '+(livePanel==='lineups'?'':'hidden')+'><h3>Starting lineups</h3><div class="grid">'+sides.map((n,i)=>'<div><h4>'+teamLabel(n)+'</h4>'+select('Formation','shape-'+i,['Unannounced','2-3-1','3-2-1','2-2-1','2-1-1','4-3-3','4-4-2','3-5-2','4-2-3-1'],m.formations?.[n]||'Unannounced')+'<p class="hint">Drag a jersey or focus it and use the arrow keys to position a player.</p>'+shirtPitch(n,pitchPoints(m.lineups[n]||[],m.formations?.[n],m.positions?.[n]),escape,i)+'<label>Starter name<input id="starter-'+i+'" maxlength="70"></label><button type="button" data-starter="'+i+'">Add starter</button>'+[...new Set([...players(n),...(m.lineups[n]||[])])].map(v=>'<label class="check"><input type="checkbox" data-line="'+i+'" value="'+escape(v)+'" '+((m.lineups[n]||[]).includes(v)?'checked':'')+'>'+escape(v)+'</label>').join('')+(!players(n).length?'':'')+'</div>').join('')+'</div></div>'}
+ return matchList('live')+'<section class="card matchControl" id="matchControl" tabindex="-1"><div class="matchHeading">'+versus(m.home,m.away,matchMiddle(m))+'<span class="score matchClockLabel" data-live-minute-id="'+escape(m.id)+'">'+escape(matchStatusText(m))+'</span></div><p class="matchMeta"><span class="fixtureStatus" data-status="'+escape(m.status)+'">'+escape(m.status==='scheduled'?'Upcoming':m.status==='live'?'LIVE':'Full time')+'</span> '+escape(m.round+' · '+m.kickoff+' · '+m.venue)+'</p>'+(m.status==='completed'?'':'<button id="matchClock">'+(m.status==='scheduled'?'Start match':'Finish match')+' &amp; publish</button>')+'</section>'+matchPanels()+'<div class="card" '+(livePanel==='timeline'?'':'hidden')+'><h3>Match timeline</h3><ol class="events">'+m.events.map(x=>'<li>'+escape([x.minute===''?'':x.minute+'′',eventIcons[x.type]+' '+x.type,x.team,x.player,x.assist?'assist '+x.assist:''].filter(Boolean).join(' · '))+' <button data-edit="'+escape(x.id)+'">Edit</button><button data-remove="'+escape(x.id)+'">Remove</button></li>').join('')+(m.events.length?'':'<li>No events recorded yet.</li>')+'</ol></div><div class="card" '+(livePanel==='logging'?'':'hidden')+'><h3>Ref logging</h3><div class="eventTeamButtons">'+sides.map(side=>'<button data-event-team="'+escape(side)+'" aria-pressed="'+(side===eventSide)+'">'+teamLabel(side)+'</button>').join('')+'</div>'+eventForm(e)+'</div><div class="card" id="startingLineups" tabindex="-1" '+(livePanel==='lineups'?'':'hidden')+'><h3>Starting lineups</h3><div class="grid">'+sides.map((n,i)=>'<div><h4>'+teamLabel(n)+'</h4>'+select('Formation','shape-'+i,['Unannounced','2-3-1','3-2-1','2-2-1','2-1-1','4-3-3','4-4-2','3-5-2','4-2-3-1'],m.formations?.[n]||'Unannounced')+'<p class="hint">Drag a jersey or focus it and use the arrow keys to position a player.</p>'+shirtPitch(n,pitchPoints(m.lineups[n]||[],m.formations?.[n],m.positions?.[n]),escape,i)+'<label>Starter name<input id="starter-'+i+'" maxlength="70"></label><button type="button" data-starter="'+i+'">Add starter</button>'+[...new Set([...players(n),...(m.lineups[n]||[])])].map(v=>'<label class="check"><input type="checkbox" data-line="'+i+'" value="'+escape(v)+'" '+((m.lineups[n]||[]).includes(v)?'checked':'')+'>'+escape(v)+'</label>').join('')+(!players(n).length?'':'')+'</div>').join('')+'</div></div>'}
 function capture(el){
  const k=el.id,v=el.value;
  if(tab==='Teams & squads'&&k==='scenePlayer'){(state.clubs[club].scene??={}).player=v.trim()}
@@ -266,12 +312,24 @@ function capture(el){
  else if(tab==='Teams & squads'&&['title','kit','bio','players'].includes(k))state.clubs[club][k]=k==='players'?v.split('\n').map(n=>n.trim()).filter(Boolean):v;
  else if(['Fixtures','Live matches'].includes(tab)&&['home','away','round','kickoff','venue','status','stream'].includes(k)){
   const m=match();if(['home','away'].includes(k)&&v!==m[k]){if(m.status!=='scheduled'||m.events.length||Object.values(m.lineups).some(a=>a.length)||Object.keys(m.formations||{}).length||Object.keys(m.positions||{}).length){say('Clubs can change only on a scheduled fixture with no events or lineup setup.');el.value=m[k];return}if(v===m[k==='home'?'away':'home']){say('Choose two different clubs.');el.value=m[k];return}}
-  if(k==='status'&&v==='scheduled'&&m.events.length){say('A match with events must be live or completed.');el.value=m.status;return}m[k]=v;
+  if(k==='status'&&v==='scheduled'&&m.events.length){say('A match with events must be live or completed.');el.value=m.status;return}
+   if(k==='status'){
+    if(v==='live'&&m.status==='scheduled')m.startedAt??=new Date().toISOString();
+    if(v==='completed'&&m.status!=='completed')m.finishedAt=new Date().toISOString();
+    if(v==='scheduled'){delete m.startedAt;delete m.finishedAt;}
+   }
+   m[k]=v;
  }else return;
  changed();
 }
 root.addEventListener('input',e=>{if(e.target.matches('input:not([type=file]):not([type=checkbox]),textarea'))capture(e.target)});
 root.addEventListener('change',async e=>{const el=e.target,v=el.value;
+ if(['matchTeamFilter','matchStatusFilter','matchSortOrder'].includes(el.id)){
+  if(el.id==='matchTeamFilter')matchTeamFilter=v;
+  if(el.id==='matchStatusFilter')matchStatusFilter=v;
+  if(el.id==='matchSortOrder')matchSortOrder=v;
+  chooserOpen=true;render();return;
+ }
  if(el.dataset.scene&&el.files[0]){
   const c=state.clubs[club],kind=el.dataset.scene,file=el.files[0];
   busy=true;root.querySelector('.layout').inert=true;$('publish').disabled=true;
@@ -301,9 +359,10 @@ function syncMatchRoute(section){
  history.replaceState(null,'','#ref/'+encodeURIComponent(matchId)+'?section='+section);
  window.dispatchEvent(new Event('boltz-ref-lineup'));
 }
+root.addEventListener('toggle',e=>{if(e.target.classList?.contains('fixtureChooser'))chooserOpen=e.target.open},true);
 root.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||busy)return;
  const card=b.closest('[data-club-card]');if(card)club=card.dataset.clubCard;
- if(b.dataset.match){matchId=b.dataset.match;editEvent=null;eventSide=null;syncMatchRoute(b.dataset.section);render();focusSection(b.dataset.section==='live'?'#matchControl':'.fixtureActions');return}
+ if(b.dataset.match){matchId=b.dataset.match;editEvent=null;eventSide=null;chooserOpen=false;syncMatchRoute(b.dataset.section);render();focusSection(b.dataset.section==='live'?'#matchControl':'.fixtureActions');return}
  if(b.dataset.panel){livePanel=b.dataset.panel;render();root.querySelector('[data-panel="'+livePanel+'"]')?.focus({preventScroll:true});return}
  if(b.dataset.eventTeam){
   if(eventSide===b.dataset.eventTeam)return;
@@ -323,7 +382,7 @@ root.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b
  if(b.id==='matchClock'){
   const m=match();
   if(!m||m.status==='completed')return;
-  m.status=m.status==='scheduled'?'live':'completed';changed();render();await publishDraft();return;
+  if(m.status==='scheduled'){m.status='live';m.startedAt??=new Date().toISOString();}else{m.status='completed';m.finishedAt=new Date().toISOString();}changed();render();await publishDraft();return;
  }
  if(b.id==='applyOfficialFixtures'){
   if(dirty){say('Publish or reload the current draft before applying the official fixture correction.');return}
