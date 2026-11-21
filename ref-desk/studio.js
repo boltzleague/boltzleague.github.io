@@ -149,6 +149,34 @@ root.addEventListener('submit', async e=>{
 function featureView(){const f=state.features[feature];return select('Homepage slide','feature',['Season 26','Foxes champions'],feature?'Foxes champions':'Season 26')+'<div class="card">'+field('Headline','title',f.title)+area('Description','description',f.description)+uploadControl(f.image)+'</div>'}
 function menuView(){return '<div class="card"><h3>Main navigation labels</h3>'+Object.entries(state.menu).map(([id,n])=>field(id.charAt(0).toUpperCase()+id.slice(1),'menu-'+id,n)).join('')+'</div>'}
 function players(side){return state.clubs[chooseClub(side)]?.players||[]}
+function shareTeamLineup(side,source=match()){
+ if(!source||!side||![source.home,source.away].includes(side))return 0;
+ const names=[...(source.lineups?.[side]||[])];
+ const shape=source.formations?.[side];
+ const points=(source.positions?.[side]||[]).map(p=>({...p}));
+ let affected=0;
+ for(const fixture of state.matches){
+  if(![fixture.home,fixture.away].includes(side)||fixture===source)continue;
+  fixture.lineups??={};fixture.formations??={};fixture.positions??={};
+  fixture.lineups[side]=[...names];
+  if(shape)fixture.formations[side]=shape;else delete fixture.formations[side];
+  if(points.length)fixture.positions[side]=points.map(p=>({...p}));else delete fixture.positions[side];
+  affected++;
+ }
+ return affected;
+}
+function seedLeagueLineups(){
+ const helper=window.boltzLineupTemplates;
+ if(!helper)throw Error('Lineup template module unavailable. Refresh and try again.');
+ const seeded=helper.seedMissing(state.matches,state.clubs);
+ let updated=0;
+ state.matches=state.matches.map((m,i)=>{
+  const after=seeded[i];
+  if([m.home,m.away].some(side=>!(m.lineups?.[side]?.length)&&after.lineups?.[side]?.length))updated++;
+  return after;
+ });
+ return updated;
+}
 const crestNames=new Set(['Angels','Stacey','CityMen','Darkfang','Infinity','Typhoon','Foxes']);
 function crestBadge(name){
  const key=name.replace(/ FC$/,'');
@@ -340,7 +368,7 @@ function matchView(){const m=match();if(!m)return '<button id="newMatch">Add fix
  const sides=[m.home,m.away];if(!sides.includes(eventSide))eventSide=m.home;
  const recorded=m.events.find(x=>x.id===editEvent);
  const e={...recorded,player:recorded?.team===eventSide?recorded.player:'',assist:recorded?.team===eventSide?recorded.assist:'',minute:recorded?.minute??'',type:recorded?.type||'goal'};
- const controls='<section class="card matchControl" id="matchControl" tabindex="-1"><div class="matchHeading">'+versus(m.home,m.away,matchMiddle(m))+'<span class="score matchClockLabel" data-live-minute-id="'+escape(m.id)+'">'+escape(matchStatusText(m))+'</span></div><p class="matchMeta"><span class="fixtureStatus" data-status="'+escape(m.status)+'">'+escape(m.status==='scheduled'?'Upcoming':m.status==='live'?'LIVE':'Full time')+'</span> '+escape(m.round+' · '+m.kickoff+' · '+m.venue)+'</p>'+matchLifecycle(m)+matchActionButtons(m)+'</section>'+matchPanels()+'<div class="card" '+(livePanel==='timeline'?'':'hidden')+'><h3>Match timeline</h3><ol class="events">'+m.events.map(x=>'<li>'+escape([x.minute===''?'':x.minute+'′',eventIcons[x.type]+' '+x.type,x.team,x.player,x.assist?'assist '+x.assist:''].filter(Boolean).join(' · '))+' <button data-edit="'+escape(x.id)+'">Edit</button><button data-remove="'+escape(x.id)+'">Remove</button></li>').join('')+(m.events.length?'':'<li>No events recorded yet.</li>')+'</ol></div><div class="card" '+(livePanel==='logging'?'':'hidden')+'><h3>Ref logging</h3><div class="eventTeamButtons">'+sides.map(side=>'<button data-event-team="'+escape(side)+'" aria-pressed="'+(side===eventSide)+'">'+teamLabel(side)+'</button>').join('')+'</div>'+eventForm(e)+'</div><div class="card" id="startingLineups" tabindex="-1" '+(livePanel==='lineups'?'':'hidden')+'><h3>Starting lineups</h3><div class="grid">'+sides.map((n,i)=>'<div><h4>'+teamLabel(n)+'</h4>'+select('Formation','shape-'+i,['Unannounced','2-3-1','3-2-1','2-2-1','2-1-1','4-3-3','4-4-2','3-5-2','4-2-3-1'],m.formations?.[n]||'Unannounced')+'<p class="hint">Drag a jersey or focus it and use the arrow keys to position a player.</p>'+shirtPitch(n,pitchPoints(m.lineups[n]||[],m.formations?.[n],m.positions?.[n]),escape,i)+'<label>Starter name<input id="starter-'+i+'" maxlength="70"></label><button type="button" data-starter="'+i+'">Add starter</button>'+[...new Set([...players(n),...(m.lineups[n]||[])])].map(v=>'<label class="check"><input type="checkbox" data-line="'+i+'" value="'+escape(v)+'" '+((m.lineups[n]||[]).includes(v)?'checked':'')+'>'+escape(v)+'</label>').join('')+(!players(n).length?'':'')+'</div>').join('')+'</div></div>';return matchList('live',controls);
+ const controls='<section class="card matchControl" id="matchControl" tabindex="-1"><div class="matchHeading">'+versus(m.home,m.away,matchMiddle(m))+'<span class="score matchClockLabel" data-live-minute-id="'+escape(m.id)+'">'+escape(matchStatusText(m))+'</span></div><p class="matchMeta"><span class="fixtureStatus" data-status="'+escape(m.status)+'">'+escape(m.status==='scheduled'?'Upcoming':m.status==='live'?'LIVE':'Full time')+'</span> '+escape(m.round+' · '+m.kickoff+' · '+m.venue)+'</p>'+matchLifecycle(m)+matchActionButtons(m)+'</section>'+matchPanels()+'<div class="card" '+(livePanel==='timeline'?'':'hidden')+'><h3>Match timeline</h3><ol class="events">'+m.events.map(x=>'<li>'+escape([x.minute===''?'':x.minute+'′',eventIcons[x.type]+' '+x.type,x.team,x.player,x.assist?'assist '+x.assist:''].filter(Boolean).join(' · '))+' <button data-edit="'+escape(x.id)+'">Edit</button><button data-remove="'+escape(x.id)+'">Remove</button></li>').join('')+(m.events.length?'':'<li>No events recorded yet.</li>')+'</ol></div><div class="card" '+(livePanel==='logging'?'':'hidden')+'><h3>Ref logging</h3><div class="eventTeamButtons">'+sides.map(side=>'<button data-event-team="'+escape(side)+'" aria-pressed="'+(side===eventSide)+'">'+teamLabel(side)+'</button>').join('')+'</div>'+eventForm(e)+'</div><div class="card" id="startingLineups" tabindex="-1" '+(livePanel==='lineups'?'':'hidden')+'><h3>Starting lineups · 8-a-side</h3><p class="hint">Seven registered outfield players per club, including the captain, plus a visual GK placeholder. Changes to a club lineup or formation update every Season 26 fixture involving that club.</p><button type="button" id="seedAllLineups">Fill missing lineups across all fixtures &amp; publish</button><div class="grid">'+sides.map((n,i)=>'<div><h4>'+teamLabel(n)+'</h4>'+select('Formation','shape-'+i,['Unannounced','2-3-2','3-2-2','2-2-3','2-3-1','3-2-1','2-2-1','2-1-1','4-3-3','4-4-2','3-5-2','4-2-3-1'],m.formations?.[n]||'Unannounced')+'<p class="hint">Drag a jersey or focus it and use the arrow keys to position a player.</p>'+shirtPitch(n,pitchPoints(m.lineups[n]||[],m.formations?.[n],m.positions?.[n]),escape,i)+'<label>Starter name<input id="starter-'+i+'" list="starterNames-'+i+'" maxlength="70" autocomplete="off"></label><datalist id="starterNames-'+i+'">'+players(n).map(name=>'<option value="'+escape(name)+'"></option>').join('')+'</datalist><button type="button" data-starter="'+i+'">Add starter</button>'+[...new Set([...players(n),...(m.lineups[n]||[])])].map(v=>'<label class="check"><input type="checkbox" data-line="'+i+'" value="'+escape(v)+'" '+((m.lineups[n]||[]).includes(v)?'checked':'')+'>'+escape(v)+'</label>').join('')+(!players(n).length?'':'')+'</div>').join('')+'</div></div>';return matchList('live',controls);
 }
 function capture(el){
  const k=el.id,v=el.value;
@@ -379,12 +407,12 @@ root.addEventListener('change',async e=>{const el=e.target,v=el.value;
   }catch(err){say(err.message)}finally{busy=false;root.querySelector('.layout').inert=false;$('publish').disabled=!dirty}
   return;
  }
- if(el.id.startsWith('shape-')){const m=match(),side=[m.home,m.away][Number(el.id.slice(-1))];m.formations??={};if(m.positions)delete m.positions[side];if(v==='Unannounced')delete m.formations[side];else m.formations[side]=v;changed();render();return}
+ if(el.id.startsWith('shape-')){const m=match(),side=[m.home,m.away][Number(el.id.slice(-1))];m.formations??={};if(m.positions)delete m.positions[side];if(v==='Unannounced')delete m.formations[side];else m.formations[side]=v;shareTeamLineup(side,m);changed();render();return}
  if(el.id==='upload'&&el.files[0]){
  const target=tab==='Homepage'?state.features[feature]:state.clubs[club];try{const file=el.files[0];if(file.size>3145728)throw Error('Choose a file under 3 MB.');const r=await deskFetch('api/upload',{method:'POST',body:file});const d=await r.json();if(!r.ok)throw Error(d.error);target.image=d.path;changed();render();say('Image uploaded. Publish changes to use it.')}catch(err){say(err.message)}return}
  if(el.id==='type'){updateEventFields();editEventMessage('');return}
  if(el.id==='club'){club=v;editingPlayer=null;}else if(el.id==='feature')feature=v==='Season 26'?0:1;else if(el.id==='fixture'){matchId=v;editEvent=null;eventSide=null}
- else if(el.dataset.line!==undefined){const m=match(),side=[m.home,m.away][+el.dataset.line],a=m.lineups[side]||[];if(el.checked&&a.length===11){el.checked=false;say('Select up to eleven starters.');return}if(!el.checked && m.positions?.[side])m.positions[side]=m.positions[side].filter(p=>p.name!==v);m.lineups[side]=el.checked?[...a,v]:a.filter(n=>n!==v);changed()}
+ else if(el.dataset.line!==undefined){const m=match(),side=[m.home,m.away][+el.dataset.line],a=m.lineups[side]||[];if(el.checked&&a.length>=7){el.checked=false;say('Choose seven registered outfield players. The GK jersey is a separate placeholder.');return}if(!el.checked && m.positions?.[side])m.positions[side]=m.positions[side].filter(p=>p.name!==v);m.lineups[side]=el.checked?[...a,v]:a.filter(n=>n!==v);shareTeamLineup(side,m);changed()}
  else if(el.tagName==='SELECT'){capture(el);if(!['status','home','away'].includes(el.id))return}else return;
  render();
 });
@@ -476,7 +504,14 @@ root.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b
  }
  if(b.id==='clearScene'){delete state.clubs[club].scene;changed();render();return}
  if(b.dataset.tab){tab=b.dataset.tab;editingPlayer=null;editEvent=null;say('');render();return}
- if(b.id==='newMatch'){if(state.matches.length>=150){say('Season fixture limit reached.');return}const m={id:crypto.randomUUID(),round:'Round 1',kickoff:'13:00',venue:'Pitch 1',home:'Stacey FC',away:'Foxes FC',status:'scheduled',events:[],lineups:{},stream:''};state.matches.push(m);matchId=m.id;tab='Fixtures';changed();render();return}
+ if(b.id==='seedAllLineups'){
+   if(dirty){say('Publish or reload the current draft before applying missing lineups.');return}
+   if(!confirm('Fill missing lineups with seven registered outfield players (including captains) and a GK display placeholder? Existing lineups, events and scores stay intact.'))return;
+   const count=seedLeagueLineups();
+   if(!count){say('All fixtures already have lineups. Future edits are synchronized per club.');return}
+   changed();render();await publishDraft();return;
+  }
+  if(b.id==='newMatch'){if(state.matches.length>=150){say('Season fixture limit reached.');return}const m={id:crypto.randomUUID(),round:'Round 1',kickoff:'13:00',venue:'Pitch 1',home:'Stacey FC',away:'Foxes FC',status:'scheduled',events:[],lineups:{},stream:''};state.matches.push(m);matchId=m.id;tab='Fixtures';changed();render();return}
  if(b.dataset.remove){match().events=match().events.filter(x=>x.id!==b.dataset.remove);editEvent=null;changed();render();return}
  if(b.dataset.edit){livePanel='logging';editEvent=b.dataset.edit;eventSide=match().events.find(x=>x.id===editEvent).team;render();$('player').focus();return}
  if(b.id==='publish'||b.id==='dbSave'){await publishDraft()}
@@ -580,8 +615,8 @@ root.addEventListener('click', e=>{
  const add=e.target.closest('[data-starter]');if(!add)return;
  const i=Number(add.dataset.starter), m=match(), side=[m.home,m.away][i];
  const value=$('starter-'+i).value.trim(), starters=m.lineups[side]||[];
- if(!value||starters.includes(value)||starters.length>=11){say('Enter a new name, up to eleven starters.');return}
- m.lineups[side]=[...starters,value];changed();render();
+ if(!value||starters.includes(value)||starters.length>=7||!players(side).includes(value)){say('Choose a registered player who is not already selected. Seven outfield players maximum.');return}
+ m.lineups[side]=[...starters,value];shareTeamLineup(side,m);changed();render();
 });
 function positionJersey(el,x,y) {
  const m=match(),side=[m.home,m.away][Number(el.dataset.position)];
