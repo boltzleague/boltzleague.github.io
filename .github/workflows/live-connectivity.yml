@@ -1,0 +1,17 @@
+name: Boltz League live connectivity check
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  connectivity:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probe GitHub Pages and live referee API without credentials
+        run: node scripts/check-live-connectivity.mjs
