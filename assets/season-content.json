@@ -169,8 +169,107 @@
       "status": "scheduled",
       "id": "s26-1",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Typhoon FC": [
+          "Timo",
+          "Seyi",
+          "Rob",
+          "Timothy",
+          "Marko (C)",
+          "Ahmed",
+          "Pablo"
+        ],
+        "CityMen FC": [
+          "Abz",
+          "Georginho (Pen)",
+          "Steady",
+          "Ebenezer (C)",
+          "Prince",
+          "Omer",
+          "John E"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Typhoon FC": "3-2-2",
+        "CityMen FC": "2-2-3"
+      },
+      "positions": {
+        "Typhoon FC": [
+          {
+            "name": "Timo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Rob",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Timothy",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Marko (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Ahmed",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Pablo",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "CityMen FC": [
+          {
+            "name": "Abz",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Georginho (Pen)",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Steady",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Ebenezer (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Prince",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Omer",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "John E",
+            "x": 75,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Infinity FC",
@@ -181,8 +280,107 @@
       "status": "scheduled",
       "id": "s26-2",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Infinity FC": [
+          "Ibrahim",
+          "Tony",
+          "Isreal",
+          "Abood (C)",
+          "Steven",
+          "Onnie",
+          "Tommy"
+        ],
+        "Stacey FC": [
+          "Warryn",
+          "Rasheed",
+          "Saad",
+          "Daniel (C)",
+          "KP",
+          "Jeremiah",
+          "Harry B"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Infinity FC": "2-2-3",
+        "Stacey FC": "2-3-2"
+      },
+      "positions": {
+        "Infinity FC": [
+          {
+            "name": "Ibrahim",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tony",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Abood (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Steven",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Onnie",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "Tommy",
+            "x": 75,
+            "y": 72
+          }
+        ],
+        "Stacey FC": [
+          {
+            "name": "Warryn",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Rasheed",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Saad",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Daniel (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "KP",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Jeremiah",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Harry B",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Foxes FC",
@@ -193,8 +391,107 @@
       "status": "scheduled",
       "id": "s26-3",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Foxes FC": [
+          "Ricardo",
+          "Toby",
+          "Isreal",
+          "Seyi",
+          "Steve (C)",
+          "Zod",
+          "Ace"
+        ],
+        "Darkfang FC": [
+          "Abdul Qudus",
+          "Tanzeem",
+          "Samin",
+          "Glo (C)",
+          "Fadil",
+          "Uwa",
+          "Panashe"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Foxes FC": "3-2-2",
+        "Darkfang FC": "2-3-2"
+      },
+      "positions": {
+        "Foxes FC": [
+          {
+            "name": "Ricardo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Toby",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Steve (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Zod",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Ace",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Darkfang FC": [
+          {
+            "name": "Abdul Qudus",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tanzeem",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Samin",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Glo (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Fadil",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Uwa",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Panashe",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Stacey FC",
@@ -205,8 +502,107 @@
       "status": "scheduled",
       "id": "s26-4",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Stacey FC": [
+          "Warryn",
+          "Rasheed",
+          "Saad",
+          "Daniel (C)",
+          "KP",
+          "Jeremiah",
+          "Harry B"
+        ],
+        "Angels FC": [
+          "Nheeyo",
+          "Farouk S.",
+          "Abiola",
+          "Teddy (C)",
+          "Malvin",
+          "Yahya",
+          "Adrian"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Stacey FC": "2-3-2",
+        "Angels FC": "2-3-2"
+      },
+      "positions": {
+        "Stacey FC": [
+          {
+            "name": "Warryn",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Rasheed",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Saad",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Daniel (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "KP",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Jeremiah",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Harry B",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Angels FC": [
+          {
+            "name": "Nheeyo",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Farouk S.",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Abiola",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Teddy (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Malvin",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Yahya",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Adrian",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Darkfang FC",
@@ -217,8 +613,107 @@
       "status": "scheduled",
       "id": "s26-5",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Darkfang FC": [
+          "Abdul Qudus",
+          "Tanzeem",
+          "Samin",
+          "Glo (C)",
+          "Fadil",
+          "Uwa",
+          "Panashe"
+        ],
+        "Typhoon FC": [
+          "Timo",
+          "Seyi",
+          "Rob",
+          "Timothy",
+          "Marko (C)",
+          "Ahmed",
+          "Pablo"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Darkfang FC": "2-3-2",
+        "Typhoon FC": "3-2-2"
+      },
+      "positions": {
+        "Darkfang FC": [
+          {
+            "name": "Abdul Qudus",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tanzeem",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Samin",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Glo (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Fadil",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Uwa",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Panashe",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Typhoon FC": [
+          {
+            "name": "Timo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Rob",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Timothy",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Marko (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Ahmed",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Pablo",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Foxes FC",
@@ -229,8 +724,107 @@
       "status": "scheduled",
       "id": "s26-6",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Foxes FC": [
+          "Ricardo",
+          "Toby",
+          "Isreal",
+          "Seyi",
+          "Steve (C)",
+          "Zod",
+          "Ace"
+        ],
+        "Infinity FC": [
+          "Ibrahim",
+          "Tony",
+          "Isreal",
+          "Abood (C)",
+          "Steven",
+          "Onnie",
+          "Tommy"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Foxes FC": "3-2-2",
+        "Infinity FC": "2-2-3"
+      },
+      "positions": {
+        "Foxes FC": [
+          {
+            "name": "Ricardo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Toby",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Steve (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Zod",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Ace",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Infinity FC": [
+          {
+            "name": "Ibrahim",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tony",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Abood (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Steven",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Onnie",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "Tommy",
+            "x": 75,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "CityMen FC",
@@ -241,8 +835,107 @@
       "status": "scheduled",
       "id": "s26-7",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "CityMen FC": [
+          "Abz",
+          "Georginho (Pen)",
+          "Steady",
+          "Ebenezer (C)",
+          "Prince",
+          "Omer",
+          "John E"
+        ],
+        "Darkfang FC": [
+          "Abdul Qudus",
+          "Tanzeem",
+          "Samin",
+          "Glo (C)",
+          "Fadil",
+          "Uwa",
+          "Panashe"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "CityMen FC": "2-2-3",
+        "Darkfang FC": "2-3-2"
+      },
+      "positions": {
+        "CityMen FC": [
+          {
+            "name": "Abz",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Georginho (Pen)",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Steady",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Ebenezer (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Prince",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Omer",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "John E",
+            "x": 75,
+            "y": 72
+          }
+        ],
+        "Darkfang FC": [
+          {
+            "name": "Abdul Qudus",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tanzeem",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Samin",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Glo (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Fadil",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Uwa",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Panashe",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Angels FC",
@@ -253,8 +946,107 @@
       "status": "scheduled",
       "id": "s26-8",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Angels FC": [
+          "Nheeyo",
+          "Farouk S.",
+          "Abiola",
+          "Teddy (C)",
+          "Malvin",
+          "Yahya",
+          "Adrian"
+        ],
+        "Foxes FC": [
+          "Ricardo",
+          "Toby",
+          "Isreal",
+          "Seyi",
+          "Steve (C)",
+          "Zod",
+          "Ace"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Angels FC": "2-3-2",
+        "Foxes FC": "3-2-2"
+      },
+      "positions": {
+        "Angels FC": [
+          {
+            "name": "Nheeyo",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Farouk S.",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Abiola",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Teddy (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Malvin",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Yahya",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Adrian",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Foxes FC": [
+          {
+            "name": "Ricardo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Toby",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Steve (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Zod",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Ace",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Typhoon FC",
@@ -265,8 +1057,107 @@
       "status": "scheduled",
       "id": "s26-9",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Typhoon FC": [
+          "Timo",
+          "Seyi",
+          "Rob",
+          "Timothy",
+          "Marko (C)",
+          "Ahmed",
+          "Pablo"
+        ],
+        "Infinity FC": [
+          "Ibrahim",
+          "Tony",
+          "Isreal",
+          "Abood (C)",
+          "Steven",
+          "Onnie",
+          "Tommy"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Typhoon FC": "3-2-2",
+        "Infinity FC": "2-2-3"
+      },
+      "positions": {
+        "Typhoon FC": [
+          {
+            "name": "Timo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Rob",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Timothy",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Marko (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Ahmed",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Pablo",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Infinity FC": [
+          {
+            "name": "Ibrahim",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tony",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Abood (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Steven",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Onnie",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "Tommy",
+            "x": 75,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Foxes FC",
@@ -277,8 +1168,107 @@
       "status": "scheduled",
       "id": "s26-10",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Foxes FC": [
+          "Ricardo",
+          "Toby",
+          "Isreal",
+          "Seyi",
+          "Steve (C)",
+          "Zod",
+          "Ace"
+        ],
+        "Stacey FC": [
+          "Warryn",
+          "Rasheed",
+          "Saad",
+          "Daniel (C)",
+          "KP",
+          "Jeremiah",
+          "Harry B"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Foxes FC": "3-2-2",
+        "Stacey FC": "2-3-2"
+      },
+      "positions": {
+        "Foxes FC": [
+          {
+            "name": "Ricardo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Toby",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Steve (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Zod",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Ace",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Stacey FC": [
+          {
+            "name": "Warryn",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Rasheed",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Saad",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Daniel (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "KP",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Jeremiah",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Harry B",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Infinity FC",
@@ -289,8 +1279,107 @@
       "status": "scheduled",
       "id": "s26-11",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Infinity FC": [
+          "Ibrahim",
+          "Tony",
+          "Isreal",
+          "Abood (C)",
+          "Steven",
+          "Onnie",
+          "Tommy"
+        ],
+        "CityMen FC": [
+          "Abz",
+          "Georginho (Pen)",
+          "Steady",
+          "Ebenezer (C)",
+          "Prince",
+          "Omer",
+          "John E"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Infinity FC": "2-2-3",
+        "CityMen FC": "2-2-3"
+      },
+      "positions": {
+        "Infinity FC": [
+          {
+            "name": "Ibrahim",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tony",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Abood (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Steven",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Onnie",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "Tommy",
+            "x": 75,
+            "y": 72
+          }
+        ],
+        "CityMen FC": [
+          {
+            "name": "Abz",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Georginho (Pen)",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Steady",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Ebenezer (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Prince",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Omer",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "John E",
+            "x": 75,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Typhoon FC",
@@ -301,8 +1390,107 @@
       "status": "scheduled",
       "id": "s26-12",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Typhoon FC": [
+          "Timo",
+          "Seyi",
+          "Rob",
+          "Timothy",
+          "Marko (C)",
+          "Ahmed",
+          "Pablo"
+        ],
+        "Angels FC": [
+          "Nheeyo",
+          "Farouk S.",
+          "Abiola",
+          "Teddy (C)",
+          "Malvin",
+          "Yahya",
+          "Adrian"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Typhoon FC": "3-2-2",
+        "Angels FC": "2-3-2"
+      },
+      "positions": {
+        "Typhoon FC": [
+          {
+            "name": "Timo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Rob",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Timothy",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Marko (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Ahmed",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Pablo",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Angels FC": [
+          {
+            "name": "Nheeyo",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Farouk S.",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Abiola",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Teddy (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Malvin",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Yahya",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Adrian",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Darkfang FC",
@@ -313,8 +1501,107 @@
       "status": "scheduled",
       "id": "s26-13",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Darkfang FC": [
+          "Abdul Qudus",
+          "Tanzeem",
+          "Samin",
+          "Glo (C)",
+          "Fadil",
+          "Uwa",
+          "Panashe"
+        ],
+        "Infinity FC": [
+          "Ibrahim",
+          "Tony",
+          "Isreal",
+          "Abood (C)",
+          "Steven",
+          "Onnie",
+          "Tommy"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Darkfang FC": "2-3-2",
+        "Infinity FC": "2-2-3"
+      },
+      "positions": {
+        "Darkfang FC": [
+          {
+            "name": "Abdul Qudus",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tanzeem",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Samin",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Glo (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Fadil",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Uwa",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Panashe",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Infinity FC": [
+          {
+            "name": "Ibrahim",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tony",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Abood (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Steven",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Onnie",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "Tommy",
+            "x": 75,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Stacey FC",
@@ -325,8 +1612,107 @@
       "status": "scheduled",
       "id": "s26-14",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Stacey FC": [
+          "Warryn",
+          "Rasheed",
+          "Saad",
+          "Daniel (C)",
+          "KP",
+          "Jeremiah",
+          "Harry B"
+        ],
+        "Typhoon FC": [
+          "Timo",
+          "Seyi",
+          "Rob",
+          "Timothy",
+          "Marko (C)",
+          "Ahmed",
+          "Pablo"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Stacey FC": "2-3-2",
+        "Typhoon FC": "3-2-2"
+      },
+      "positions": {
+        "Stacey FC": [
+          {
+            "name": "Warryn",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Rasheed",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Saad",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Daniel (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "KP",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Jeremiah",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Harry B",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Typhoon FC": [
+          {
+            "name": "Timo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Rob",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Timothy",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Marko (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Ahmed",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Pablo",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "CityMen FC",
@@ -337,8 +1723,107 @@
       "status": "scheduled",
       "id": "s26-15",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "CityMen FC": [
+          "Abz",
+          "Georginho (Pen)",
+          "Steady",
+          "Ebenezer (C)",
+          "Prince",
+          "Omer",
+          "John E"
+        ],
+        "Angels FC": [
+          "Nheeyo",
+          "Farouk S.",
+          "Abiola",
+          "Teddy (C)",
+          "Malvin",
+          "Yahya",
+          "Adrian"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "CityMen FC": "2-2-3",
+        "Angels FC": "2-3-2"
+      },
+      "positions": {
+        "CityMen FC": [
+          {
+            "name": "Abz",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Georginho (Pen)",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Steady",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Ebenezer (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Prince",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Omer",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "John E",
+            "x": 75,
+            "y": 72
+          }
+        ],
+        "Angels FC": [
+          {
+            "name": "Nheeyo",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Farouk S.",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Abiola",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Teddy (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Malvin",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Yahya",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Adrian",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Typhoon FC",
@@ -349,8 +1834,107 @@
       "status": "scheduled",
       "id": "s26-16",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Typhoon FC": [
+          "Timo",
+          "Seyi",
+          "Rob",
+          "Timothy",
+          "Marko (C)",
+          "Ahmed",
+          "Pablo"
+        ],
+        "Foxes FC": [
+          "Ricardo",
+          "Toby",
+          "Isreal",
+          "Seyi",
+          "Steve (C)",
+          "Zod",
+          "Ace"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Typhoon FC": "3-2-2",
+        "Foxes FC": "3-2-2"
+      },
+      "positions": {
+        "Typhoon FC": [
+          {
+            "name": "Timo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Rob",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Timothy",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Marko (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Ahmed",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Pablo",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Foxes FC": [
+          {
+            "name": "Ricardo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Toby",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Steve (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Zod",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Ace",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Angels FC",
@@ -361,8 +1945,107 @@
       "status": "scheduled",
       "id": "s26-17",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Angels FC": [
+          "Nheeyo",
+          "Farouk S.",
+          "Abiola",
+          "Teddy (C)",
+          "Malvin",
+          "Yahya",
+          "Adrian"
+        ],
+        "Darkfang FC": [
+          "Abdul Qudus",
+          "Tanzeem",
+          "Samin",
+          "Glo (C)",
+          "Fadil",
+          "Uwa",
+          "Panashe"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Angels FC": "2-3-2",
+        "Darkfang FC": "2-3-2"
+      },
+      "positions": {
+        "Angels FC": [
+          {
+            "name": "Nheeyo",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Farouk S.",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Abiola",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Teddy (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Malvin",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Yahya",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Adrian",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Darkfang FC": [
+          {
+            "name": "Abdul Qudus",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tanzeem",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Samin",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Glo (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Fadil",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Uwa",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Panashe",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "CityMen FC",
@@ -373,8 +2056,107 @@
       "status": "scheduled",
       "id": "s26-18",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "CityMen FC": [
+          "Abz",
+          "Georginho (Pen)",
+          "Steady",
+          "Ebenezer (C)",
+          "Prince",
+          "Omer",
+          "John E"
+        ],
+        "Stacey FC": [
+          "Warryn",
+          "Rasheed",
+          "Saad",
+          "Daniel (C)",
+          "KP",
+          "Jeremiah",
+          "Harry B"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "CityMen FC": "2-2-3",
+        "Stacey FC": "2-3-2"
+      },
+      "positions": {
+        "CityMen FC": [
+          {
+            "name": "Abz",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Georginho (Pen)",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Steady",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Ebenezer (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Prince",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Omer",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "John E",
+            "x": 75,
+            "y": 72
+          }
+        ],
+        "Stacey FC": [
+          {
+            "name": "Warryn",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Rasheed",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Saad",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Daniel (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "KP",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Jeremiah",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Harry B",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Infinity FC",
@@ -385,8 +2167,107 @@
       "status": "scheduled",
       "id": "s26-19",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Infinity FC": [
+          "Ibrahim",
+          "Tony",
+          "Isreal",
+          "Abood (C)",
+          "Steven",
+          "Onnie",
+          "Tommy"
+        ],
+        "Angels FC": [
+          "Nheeyo",
+          "Farouk S.",
+          "Abiola",
+          "Teddy (C)",
+          "Malvin",
+          "Yahya",
+          "Adrian"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Infinity FC": "2-2-3",
+        "Angels FC": "2-3-2"
+      },
+      "positions": {
+        "Infinity FC": [
+          {
+            "name": "Ibrahim",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tony",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Abood (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Steven",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Onnie",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "Tommy",
+            "x": 75,
+            "y": 72
+          }
+        ],
+        "Angels FC": [
+          {
+            "name": "Nheeyo",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Farouk S.",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Abiola",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Teddy (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Malvin",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Yahya",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Adrian",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Foxes FC",
@@ -397,8 +2278,107 @@
       "status": "scheduled",
       "id": "s26-20",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Foxes FC": [
+          "Ricardo",
+          "Toby",
+          "Isreal",
+          "Seyi",
+          "Steve (C)",
+          "Zod",
+          "Ace"
+        ],
+        "CityMen FC": [
+          "Abz",
+          "Georginho (Pen)",
+          "Steady",
+          "Ebenezer (C)",
+          "Prince",
+          "Omer",
+          "John E"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Foxes FC": "3-2-2",
+        "CityMen FC": "2-2-3"
+      },
+      "positions": {
+        "Foxes FC": [
+          {
+            "name": "Ricardo",
+            "x": 25,
+            "y": 23
+          },
+          {
+            "name": "Toby",
+            "x": 50,
+            "y": 23
+          },
+          {
+            "name": "Isreal",
+            "x": 75,
+            "y": 23
+          },
+          {
+            "name": "Seyi",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Steve (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Zod",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Ace",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "CityMen FC": [
+          {
+            "name": "Abz",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Georginho (Pen)",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Steady",
+            "x": 33,
+            "y": 49
+          },
+          {
+            "name": "Ebenezer (C)",
+            "x": 67,
+            "y": 49
+          },
+          {
+            "name": "Prince",
+            "x": 25,
+            "y": 72
+          },
+          {
+            "name": "Omer",
+            "x": 50,
+            "y": 72
+          },
+          {
+            "name": "John E",
+            "x": 75,
+            "y": 72
+          }
+        ]
+      }
     },
     {
       "home": "Darkfang FC",
@@ -409,8 +2389,107 @@
       "status": "scheduled",
       "id": "s26-21",
       "events": [],
-      "lineups": {},
-      "stream": ""
+      "lineups": {
+        "Darkfang FC": [
+          "Abdul Qudus",
+          "Tanzeem",
+          "Samin",
+          "Glo (C)",
+          "Fadil",
+          "Uwa",
+          "Panashe"
+        ],
+        "Stacey FC": [
+          "Warryn",
+          "Rasheed",
+          "Saad",
+          "Daniel (C)",
+          "KP",
+          "Jeremiah",
+          "Harry B"
+        ]
+      },
+      "stream": "",
+      "formations": {
+        "Darkfang FC": "2-3-2",
+        "Stacey FC": "2-3-2"
+      },
+      "positions": {
+        "Darkfang FC": [
+          {
+            "name": "Abdul Qudus",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Tanzeem",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Samin",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Glo (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "Fadil",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Uwa",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Panashe",
+            "x": 67,
+            "y": 72
+          }
+        ],
+        "Stacey FC": [
+          {
+            "name": "Warryn",
+            "x": 33,
+            "y": 23
+          },
+          {
+            "name": "Rasheed",
+            "x": 67,
+            "y": 23
+          },
+          {
+            "name": "Saad",
+            "x": 25,
+            "y": 49
+          },
+          {
+            "name": "Daniel (C)",
+            "x": 50,
+            "y": 49
+          },
+          {
+            "name": "KP",
+            "x": 75,
+            "y": 49
+          },
+          {
+            "name": "Jeremiah",
+            "x": 33,
+            "y": 72
+          },
+          {
+            "name": "Harry B",
+            "x": 67,
+            "y": 72
+          }
+        ]
+      }
     }
   ],
   "menu": {
