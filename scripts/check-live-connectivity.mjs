@@ -1,4 +1,5 @@
 // Read-only production smoke checks. No referee credentials or writes are used.
+import {readFileSync} from 'node:fs';
 const origin='https://boltzleague.github.io';
 const backend='https://boltz-league-matchday.jpiyady.chatgpt.site';
 const results=[];
@@ -11,13 +12,28 @@ const get=async(url,options={})=>{
 };
 const allowed=(value)=>value==='*'||value===origin;
 async function checkPages(){
- try{
-  const {response,type}=await get(origin+'/?smoke='+Date.now());
-  if(!response.ok){record('GitHub Pages',false,'HTTP '+response.status);return}
-  const html=await response.text();
-  record('GitHub Pages',html.includes('ref-access.js?v=27.1')&&html.includes('published.js?v=27.0'),
-    'HTTP '+response.status+' '+type+'; updated build '+(html.includes('ref-access.js?v=27.1')?'present':'missing'));
- }catch(error){record('GitHub Pages',false,String(error))}
+ const expected=readFileSync('index.html','utf8');
+ const scripts=['ref-access.js','published.js'];
+ const signatures=scripts.map(name=>{
+  const match=expected.match(new RegExp(name.replace('.','\\.')+'\\?v=[\\d.]+'));
+  if(!match)throw Error('Cannot find local script version: '+name);
+  return match[0];
+ });
+ let last='not reached';
+ for(let i=0;i<9;i++){
+  try{
+   const {response,type}=await get(origin+'/?smoke='+Date.now());
+   if(!response.ok){last='HTTP '+response.status;continue}
+   const html=await response.text();
+   if(signatures.every(x=>html.includes(x))){
+    record('GitHub Pages',true,'HTTP '+response.status+' '+type+'; published build '+signatures.join(', '));
+    return;
+   }
+   last='HTTP '+response.status+'; deployment still propagating '+signatures.join(', ');
+  }catch(error){last=String(error)}
+  if(i<8)await new Promise(resolve=>setTimeout(resolve,5000));
+ }
+ record('GitHub Pages',false,last);
 }
 async function checkPublicFeed(){
  try{
