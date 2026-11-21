@@ -88,8 +88,8 @@
   if(initialState){const state=initialState;initialState=null;return state}
   try{return await readDesk()}catch(error){if(error.expired){disconnect();ask();feedback.textContent=error.message}throw error}
  };
- const moduleURL=new URL('ref-desk/studio.js?v=26.9',document.baseURI);
- const cssURL=new URL('ref-desk/studio.css?v=26.8',document.baseURI);
+ const moduleURL=new URL('ref-desk/studio.js?v=27.1',document.baseURI);
+ const cssURL=new URL('ref-desk/studio.css?v=27.1',document.baseURI);
  let editorModule;
  function warmEditor(){return editorModule??=import(moduleURL.href).catch(error=>{editorModule=null;throw error})}
  password.enterKeyHint='go';

@@ -87,3 +87,10 @@ body.embedded{color:var(--ink,#18212b);background:var(--bg,#f4f6f8)}
 .jerseyPitch button.jersey{touch-action:none;transition:left .23s cubic-bezier(.2,.8,.2,1),top .23s cubic-bezier(.2,.8,.2,1),transform .18s ease,filter .18s ease;will-change:left,top,transform}
 .jerseyPitch button.jersey.is-dragging{z-index:10;cursor:grabbing;transition:transform .1s ease,filter .1s ease;transform:translate(-50%,-50%) scale(1.17);filter:drop-shadow(0 6px 6px #0008)}
 @media(prefers-reduced-motion:reduce){.jerseyPitch button.jersey{transition:none!important}}
+
+/* Persistent publish verification visible even when an official is scrolled deep into a match. */
+#saveNotice{position:fixed;z-index:300;left:50%;bottom:max(15px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(620px,calc(100vw - 28px));padding:13px 17px;border-radius:12px;border:2px solid #64748b;background:#1b2737;color:white;box-shadow:0 8px 30px #0005;font-weight:750;line-height:1.45;overflow-wrap:anywhere}
+#saveNotice[hidden]{display:none}
+#saveNotice[data-kind=success]{background:#124d35;border-color:#2ca26b;color:white}
+#saveNotice[data-kind=error]{background:#792b32;border-color:#e66c76;color:white}
+#saveNotice[data-kind=working]{background:#24364b;border-color:#ffd04a;color:white}

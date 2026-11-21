@@ -1,3 +1,72 @@
+
+const BOLTZ_MISSING=Symbol('missing');
+const boltzOwn=(obj,k)=>obj!==BOLTZ_MISSING&&obj!=null&&Object.prototype.hasOwnProperty.call(obj,k);
+function boltzEquals(a,b){
+ if(a===b)return true;
+ if(a===BOLTZ_MISSING||b===BOLTZ_MISSING)return false;
+ if(!a||!b||typeof a!=='object'||typeof b!=='object')return false;
+ if(Array.isArray(a)||Array.isArray(b))return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((v,i)=>boltzEquals(v,b[i]));
+ const ak=Object.keys(a),bk=Object.keys(b);
+ return ak.length===bk.length&&ak.every(k=>boltzOwn(b,k)&&boltzEquals(a[k],b[k]));
+}
+function boltzCopy(v){
+ if(v===BOLTZ_MISSING||v===null||typeof v!=='object')return v;
+ return Array.isArray(v)?v.map(boltzCopy):Object.fromEntries(Object.entries(v).map(([k,n])=>[k,boltzCopy(n)]));
+}
+function boltzMergeNode(base,local,remote,path,conflicts){
+ if(boltzEquals(local,base))return boltzCopy(remote);
+ if(boltzEquals(remote,base))return boltzCopy(local);
+ if(boltzEquals(local,remote))return boltzCopy(remote);
+ if(path==='matches' && [base,local,remote].every(Array.isArray)){
+  const index=arr=>new Map(arr.map(m=>[m.id,m]));
+  const a=index(base),b=index(local),c=index(remote);
+  if(a.size!==base.length||b.size!==local.length||c.size!==remote.length){conflicts.push('matches: duplicate fixture IDs');return boltzCopy(remote)}
+  const ids=[...new Set([...remote.map(m=>m.id),...local.map(m=>m.id),...base.map(m=>m.id)])];
+  return ids.flatMap(id=>{
+   const merged=boltzMergeNode(a.has(id)?a.get(id):BOLTZ_MISSING,
+    b.has(id)?b.get(id):BOLTZ_MISSING,
+    c.has(id)?c.get(id):BOLTZ_MISSING,'matches.'+id,conflicts);
+   return merged===BOLTZ_MISSING?[]:[merged];
+  });
+ }
+ const object=v=>v&&v!==BOLTZ_MISSING&&typeof v==='object'&&!Array.isArray(v);
+ if(object(base)&&object(local)&&object(remote)){
+  const keys=new Set([...Object.keys(base),...Object.keys(local),...Object.keys(remote)]);
+  const merged={};
+  for(const key of keys){
+   const value=boltzMergeNode(boltzOwn(base,key)?base[key]:BOLTZ_MISSING,
+    boltzOwn(local,key)?local[key]:BOLTZ_MISSING,
+    boltzOwn(remote,key)?remote[key]:BOLTZ_MISSING,
+    path?path+'.'+key:key,conflicts);
+   if(value!==BOLTZ_MISSING)merged[key]=value;
+  }
+  return merged;
+ }
+ conflicts.push(path||'season');
+ return boltzCopy(remote);
+}
+function boltzMergeDraft(baseline,draft,latest){
+ const conflicts=[],state=boltzMergeNode(baseline,draft,latest,'',conflicts);
+ return {state,conflicts};
+}
+function boltzPatchPresent(baseline,draft,latest,path=''){
+ if(boltzEquals(baseline,draft)||boltzEquals(draft,latest))return true;
+ if(path==='matches'&&[baseline,draft,latest].every(Array.isArray)){
+  const index=arr=>new Map(arr.map(m=>[m.id,m])),a=index(baseline),b=index(draft),c=index(latest);
+  return [...new Set([...a.keys(),...b.keys()])].every(id=>boltzPatchPresent(
+   a.has(id)?a.get(id):BOLTZ_MISSING,b.has(id)?b.get(id):BOLTZ_MISSING,
+   c.has(id)?c.get(id):BOLTZ_MISSING,'matches.'+id));
+ }
+ const object=v=>v&&v!==BOLTZ_MISSING&&typeof v==='object'&&!Array.isArray(v);
+ if(object(baseline)&&object(draft)&&object(latest))
+  return [...new Set([...Object.keys(baseline),...Object.keys(draft)])].every(k=>boltzPatchPresent(
+   boltzOwn(baseline,k)?baseline[k]:BOLTZ_MISSING,
+   boltzOwn(draft,k)?draft[k]:BOLTZ_MISSING,
+   boltzOwn(latest,k)?latest[k]:BOLTZ_MISSING,
+   path?path+'.'+k:k));
+ return false;
+}
+
 'use strict';
 export function mountRefDesk(root, query, inline = false) {
  const lifetime = new AbortController();
@@ -23,7 +92,7 @@ const pendingEventPlayers=new Set();
 let role='guest';
 const sectionTabs={teams:'Teams & squads',fixtures:'Fixtures',live:'Live matches',database:'Database control'};
 const tabs=[...Object.values(sectionTabs),'Homepage','Navigation'];
-let state,revision,dirty=false,busy=false,restoreSeasonStart=false,tab=sectionTabs[query.get('section')] || (query.has('match')?'Live matches':tabs[0]),club='Foxes',matchId,feature=0,eventSide,editEvent;
+let state,revision,publishedBaseline,dirty=false,busy=false,restoreSeasonStart=false,tab=sectionTabs[query.get('section')] || (query.has('match')?'Live matches':tabs[0]),club='Foxes',matchId,feature=0,eventSide,editEvent;
 let matchTeamFilter='',matchStatusFilter='',matchSortOrder='status',chooserOpen=false,expandedMatchId=query.get('match')||null,completedEditMatchId=null;
 if(!inline)window.boltzRefDirty=()=>dirty;
 const say=v=>$('feedback').textContent=v;
@@ -303,7 +372,7 @@ function eventForm(e){
    '<div class="row"><button type="button" id="addNameToEvent">Add and select</button><button type="button" id="cancelEventPlayer">Cancel</button></div>'+
    '<p class="hint">The player joins this team’s squad when the event is published.</p></div>'+
    '<div role="status" id="eventFeedback" class="eventFeedback"></div>'+
-   '<button type="submit" id="addEvent">'+(editEvent?'Update event':dirty?'Add event to draft':'Add &amp; publish event')+'</button></form>';
+   '<button type="submit" id="addEvent">'+(editEvent?'Update &amp; publish event':'Add &amp; publish event')+'</button></form>';
 }
 function editEventMessage(message){$('eventFeedback').textContent=message}
 function updateEventFields(){
@@ -517,7 +586,7 @@ root.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b
  if(b.id==='publish'||b.id==='dbSave'){await publishDraft()}
 });
 async function saveEvent(){
- const saveNow=!dirty&&!editEvent, m=match(), type=$('type').value;
+ const m=match(), type=$('type').value;
  if(m.status==='scheduled'){editEventMessage('Start the match before logging an event.');return}
  if(!$('newEventPlayer').hidden){editEventMessage('Select the new player using Add and select, or cancel the entry.');return}
  const player=$('player').value, assist=type==='goal'?$('assist').value:'';
@@ -539,27 +608,101 @@ async function saveEvent(){
  if(additions.length)c.players=[...registered,...additions].sort(collator.compare);
  if(editEvent)m.events[m.events.findIndex(y=>y.id===editEvent)]=x;else m.events.push(x);
  editEvent=null;changed();render();
- if(saveNow)await publishDraft();
- else say(additions.length?'Event and new player saved to draft. Publish changes to make them live.':'Event recorded in draft. Publish to update the match centre.');
+ await publishDraft();
+}
+function publishNotice(message,type='working'){
+ let banner=root.querySelector('#saveNotice');
+ if(!banner){
+  banner=document.createElement('div');banner.id='saveNotice';banner.setAttribute('role','status');
+  banner.setAttribute('aria-live','polite');root.append(banner);
+ }
+ banner.dataset.kind=type;banner.textContent=message;banner.hidden=false;
+}
+async function readVerifiedSeason(){
+ const response=await deskFetch('api/ref-state',{cache:'no-store'});
+ if(!response.ok)throw Error('Could not verify saved state (HTTP '+response.status+').');
+ const data=await response.json();
+ if(!data?.state||!Number.isInteger(data.revision)||!Array.isArray(data.state.matches))
+  throw Error('The referee service returned an incomplete verification response.');
+ return data;
 }
 async function publishDraft(){
  if(!dirty||busy)return;
  busy=true;$('publish').disabled=true;root.querySelector('.layout').inert=true;
+ const resetting=restoreSeasonStart,initialDraft=boltzCopy(state);
+ let draft=initialDraft,base=boltzCopy(publishedBaseline||state),expectedRevision=revision;
+ publishNotice('Publishing match changes…','working');
  try{
-  const resetting=restoreSeasonStart;
-  const payload=resetting?{revision,restoreSeasonStart:true}:{revision,state};
-  const r=await deskFetch('api/state',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  const d=await r.json();if(!r.ok)throw Error(d.error||'Unable to save.');
-  revision=d.revision;dirty=false;restoreSeasonStart=false;
-  if(resetting){await start();say('Opening fixtures restored. All squads and club information were kept.');return;}
-  notifyParent({type:'boltz-ref-dirty',dirty:false});notifyParent({type:'boltz-ref-published',revision});
-  $('revision').textContent='Published · revision '+revision;
-  if(tab==='Database control')render();
-  if($('addEvent'))$('addEvent').textContent=editEvent?'Update event':'Add & publish event';
-  say('Saved to the match centre.');
- }catch(err){say(err.message)}
- finally{busy=false;$('publish').disabled=!dirty;root.querySelector('.layout').inert=false}
+  let acknowledgment;
+  for(let attempt=0;attempt<3;attempt++){
+   const payload=resetting?{revision:expectedRevision,restoreSeasonStart:true}:{revision:expectedRevision,state:draft};
+   let response;
+   try{
+    response=await deskFetch('api/state',{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)});
+   }catch(error){throw Error('Could not reach the referee save service. Changes remain unpublished: '+String(error.message||error))}
+   if((response.status===409||response.status===412)&&!resetting&&attempt<2){
+    const latest=await readVerifiedSeason();
+    const resolved=boltzMergeDraft(base,draft,latest.state);
+    if(resolved.conflicts.length){
+     throw Error('Another referee changed the same field ('+resolved.conflicts.slice(0,2).join(', ')+
+      '). Your draft is safe but unpublished. Coordinate with that referee before reloading.');
+    }
+    draft=resolved.state;base=boltzCopy(latest.state);expectedRevision=latest.revision;
+    publishNotice('Another referee published first. Merging independent changes safely…','working');
+    continue;
+   }
+   if(!response.ok){
+    let error;
+    try{const body=await response.json();error=body.error||body.message}catch{}
+    if(response.status===401||response.status===403)throw Error('Referee session expired or unauthorized. Sign in again; draft is unpublished.');
+    if(response.status===409||response.status===412)throw Error('Save conflict. The season changed while saving; reload current records after preserving your draft.');
+    throw Error('Save rejected (HTTP '+response.status+'): '+(error||'Match service unavailable.'));
+   }
+   const answer=await response.json().catch(()=>({}));
+   acknowledgment=Number.isInteger(answer.revision)?answer.revision:null;
+   break;
+  }
+  if(resetting){
+   await start();publishNotice('Season opening records restored and verified.','success');return;
+  }
+  let verified=null,lastVerifyError;
+  for(let attempt=0;attempt<3;attempt++){
+   try{
+    const fresh=await readVerifiedSeason();
+    if((acknowledgment===null||fresh.revision>=acknowledgment)&&boltzPatchPresent(base,draft,fresh.state)){
+     verified=fresh;break;
+    }
+    lastVerifyError=Error('Saved values are not yet visible in the referee database.');
+   }catch(error){lastVerifyError=error}
+   if(attempt<2)await new Promise(resolve=>setTimeout(resolve,250*(attempt+1)));
+  }
+  if(!verified){
+   // Never report success without a read-back. Preserve the local draft for a safe retry.
+   state=draft;revision=acknowledgment??expectedRevision;publishedBaseline=base;
+   dirty=true;restoreSeasonStart=false;
+   const message='Save sent, but the database could not confirm the match changes. Do not start another match until the latest records are checked. '+(lastVerifyError?.message||'');
+   say(message);publishNotice(message,'error');render();
+   return;
+  }
+  state=verified.state;revision=verified.revision;publishedBaseline=boltzCopy(state);
+  dirty=false;restoreSeasonStart=false;editEvent=null;
+  notifyParent({type:'boltz-ref-dirty',dirty:false});
+  notifyParent({type:'boltz-ref-published',revision});
+  $('revision').textContent='Verified published · revision '+revision;
+  render();
+  const message='Published and verified in the live database · revision '+revision+'. Viewers should refresh automatically.';
+  say(message);publishNotice(message,'success');
+  window.syncLeague?.();
+ }catch(error){
+  const message='NOT PUBLISHED: '+(error?.message||'Unknown save error')+'. Check the save status before continuing.';
+  say(message);publishNotice(message,'error');
+  $('revision').textContent='Unpublished changes — save failed';
+ }finally{
+  busy=false;root.querySelector('.layout').inert=false;$('publish').disabled=!dirty;
+ }
 }
+
 addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}},{signal:lifetime.signal});
 function lockDesk(){
  $('revision').textContent='Locked';$('tabs').replaceChildren();$('publish').hidden=true;
@@ -581,7 +724,7 @@ async function start(){
    if(!response.ok)throw Error('Unable to load the season.');
    publication=await response.json();
  }
- state=publication.state;revision=publication.revision;dirty=false;restoreSeasonStart=false;
+ state=publication.state;revision=publication.revision;publishedBaseline=boltzCopy(state);dirty=false;restoreSeasonStart=false;
  notifyParent({type:'boltz-ref-dirty',dirty:false});$('publish').disabled=true;
  const requested=matchId || query.get('match');
  matchId=state.matches.find(m=>m.id===requested)?.id||state.matches.find(m=>m.status==='live')?.id||state.matches.find(m=>m.status==='scheduled')?.id||state.matches[0]?.id;
