@@ -26,7 +26,8 @@ function reconcileOfficialS26(matches) {
 window.boltzOfficialS26={reconcile:reconcileOfficialS26};
 function applyLeague(s){
  const fixed=reconcileOfficialS26(s.matches);
- const resolved=fixed.changes.length?{...s,matches:fixed.matches}:s;
+ const prepared=window.boltzLineupTemplates?.seedMissing(fixed.matches,s.clubs)||fixed.matches;
+ const resolved={...s,matches:prepared};
  const tournament=resolved.tournament;
  leagueState=tournament && /^season\s+6\.?$/i.test(tournament.name.trim())
    ? {...resolved,tournament:{...tournament,name:'Season 26'}} : resolved;
