@@ -28,6 +28,12 @@ async function checkPublicFeed(){
    const data=await response.json();
    shape=Number.isInteger(data?.revision)&&Array.isArray(data?.state?.matches);
    count=data?.state?.matches?.length||0;
+   if(shape){
+    const statusCounts={scheduled:0,live:0,completed:0,other:0};
+    for(const m of data.state.matches)statusCounts[m.status]===undefined?statusCounts.other++:statusCounts[m.status]++;
+    console.log('LIVE DATABASE SNAPSHOT: revision='+data.revision+' statuses='+JSON.stringify(statusCounts));
+    console.log('LIVE MATCHES: '+JSON.stringify(data.state.matches.filter(m=>m.status==='live').map(m=>({id:m.id,home:m.home,away:m.away,goals:(m.events||[]).filter(e=>e.type==='goal'||e.type==='own goal').length}))));
+   }
   }
   record('Public live-feed API',response.ok&&shape,
    'HTTP '+response.status+'; type='+type+'; fixtures='+count);
