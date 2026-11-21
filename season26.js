@@ -79,7 +79,7 @@ function matchPoster(m,source) {
  const sides=[m.home,m.away];
  const teamArt=n=>leagueState?.clubs[clean(n)]?.image || (contenders.includes(clean(n))?'/assets/club-'+clean(n)+'.webp':'/assets/hero.webp');
  const score=m.status==='scheduled'?(m.kickoff||'VS'):[m.home_score??'–',m.away_score??'–'].join(' – ');
- return '<article class="matchPoster" aria-label="'+esc(sides.join(' versus '))+'">'+sides.map((n,i)=>'<div class="posterSide side'+i+'"><img src="'+esc(teamArt(n))+'" alt=""><strong>'+crest(n)+esc(n)+'</strong></div>').join('')+'<div class="posterScore"><small class="'+(live?'onAir':'')+'">'+status+'</small><b>'+esc(score)+'</b><span>'+esc(m.venue||'')+'</span></div></article>';
+ return '<article class="matchPoster" aria-label="'+esc(sides.join(' versus '))+'">'+sides.map((n,i)=>'<div class="posterSide side'+i+'"><img src="'+esc(teamArt(n))+'" alt=""><strong>'+crest(n)+esc(n)+'</strong></div>').join('')+'<div class="posterScore"><small class="'+(live?'onAir':'')+'" data-live-status-id="'+esc(m.id||'')+'">'+status+'</small><b>'+esc(score)+'</b><span>'+esc(m.venue||'')+'</span></div></article>';
 }
 function liveBroadcast() {
  const live=data.upcoming.filter(m=>m.status==='live');
