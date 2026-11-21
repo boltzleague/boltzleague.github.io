@@ -1,9 +1,36 @@
 let leagueState,leagueRevision=-1,pendingLeague=false;
+// Matchday authority: reconcile only the four superseded, unplayed opening fixtures.
+// Do not rewrite matches with recorded activity or future deliberate changes.
+const officialS26Opening = [
+ {id:'s26-1',round:'Round 1',kickoff:'13:00',venue:'Pitch 1',oldHome:'Stacey FC',oldAway:'Darkfang FC',home:'Typhoon FC',away:'CityMen FC'},
+ {id:'s26-2',round:'Round 1',kickoff:'13:00',venue:'Pitch 2',oldHome:'Foxes FC',oldAway:'Infinity FC',home:'Infinity FC',away:'Stacey FC'},
+ {id:'s26-3',round:'Round 1',kickoff:'13:15',venue:'Pitch 1',oldHome:'CityMen FC',oldAway:'Typhoon FC',home:'Foxes FC',away:'Darkfang FC'},
+ {id:'s26-4',round:'Round 2',kickoff:'13:15',venue:'Pitch 2',oldHome:'Infinity FC',oldAway:'Angels FC',home:'Stacey FC',away:'Angels FC'}
+];
+function reconcileOfficialS26(matches) {
+ const changes=[],blocked=[];
+ const corrected=matches.map(m=>{
+  const official=officialS26Opening.find(x=>x.id===m.id);
+  if(!official||m.home!==official.oldHome||m.away!==official.oldAway||
+     m.round!==official.round||m.kickoff!==official.kickoff||m.venue!==official.venue)return m;
+  const populated=o=>Object.values(o||{}).some(v=>Array.isArray(v)?v.length>0:!!v);
+  if(m.status!=='scheduled'||(m.events?.length||0)>0||
+     populated(m.lineups)||populated(m.positions)||populated(m.formations)) {
+   blocked.push(m.id);return m;
+  }
+  changes.push(m.id);
+  return {...m,home:official.home,away:official.away};
+ });
+ return {matches:corrected,changes,blocked};
+}
+window.boltzOfficialS26={reconcile:reconcileOfficialS26};
 function applyLeague(s){
- const tournament=s.tournament;
+ const fixed=reconcileOfficialS26(s.matches);
+ const resolved=fixed.changes.length?{...s,matches:fixed.matches}:s;
+ const tournament=resolved.tournament;
  leagueState=tournament && /^season\s+6\.?$/i.test(tournament.name.trim())
-   ? {...s,tournament:{...tournament,name:'Season 26'}} : s;
- data.upcoming=s.matches.map(m=>{
+   ? {...resolved,tournament:{...tournament,name:'Season 26'}} : resolved;
+ data.upcoming=resolved.matches.map(m=>{
   const scores=[m.home,m.away].map(n=>m.events.filter(e=>(e.type==='goal'&&e.team===n)||(e.type==='own goal'&&e.team!==n)).length);
   return {...m,home_score:scores[0],away_score:scores[1]};
  });

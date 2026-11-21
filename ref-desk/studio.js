@@ -165,9 +165,15 @@ function fixturePicker(m,label='Fixture'){
  return (label==='Fixture'?versus(m.home,m.away):'')+'<label>'+label+'<select id="fixture">'+state.matches.map(x=>'<option value="'+escape(x.id)+'" '+(m===x?'selected':'')+'>'+escape(x.round+' · '+x.kickoff+' · '+x.home+' VS '+x.away+' · '+x.status)+'</option>').join('')+'</select></label>';
 }
 function fixtureView(){
- const m=match();if(!m)return '<button id="newMatch">Add fixture</button>';
+ const update=window.boltzOfficialS26?.reconcile(state.matches);
+ const notice=update?.changes.length
+  ? '<section class="card"><h3>Official matchday fixture correction</h3><p>'+update.changes.length+' opening fixture(s) still have superseded opponents in the live service. Apply the official Season 26 schedule without resetting scores, squads or archives.</p><button type="button" id="applyOfficialFixtures">Apply and publish official fixtures</button></section>'
+  : update?.blocked.length
+    ? '<section class="card"><h3>Fixture correction needs review</h3><p>One or more superseded fixtures already contain match activity or lineups. Review those matches manually to avoid moving a recorded goal or lineup to another club.</p></section>'
+    : '';
+ const m=match();if(!m)return notice+'<button id="newMatch">Add fixture</button>';
  const clubs=Object.keys(state.clubs).map(n=>n+' FC').sort(collator.compare);
- return matchList('fixtures')+fixturePicker(m)+fixtureActions()+'<section class="card"><h3>Fixture details</h3>'+'<div class="grid">'+select('Home club','home',clubs,m.home)+select('Away club','away',clubs,m.away)+'<label>Round or stage<input id="round" list="roundNames" maxlength="50" value="'+escape(m.round)+'"></label><datalist id="roundNames">'+opts([...new Set([...state.matches.map(m=>m.round),...Array.from({length:12},(_,i)=>'Week '+(i+1)),'Semi-final','Final'])],m.round)+'</datalist>'+field('Kickoff','kickoff',m.kickoff,'time')+field('Pitch','venue',m.venue)+select('Status','status',['scheduled','live','completed'],m.status)+'</div>'+field('TV / stream URL','stream',m.stream||'','url')+'<button id="openMatch">Edit live match &amp; lineup</button></section>';
+ return notice+matchList('fixtures')+fixturePicker(m)+fixtureActions()+'<section class="card"><h3>Fixture details</h3>'+'<div class="grid">'+select('Home club','home',clubs,m.home)+select('Away club','away',clubs,m.away)+'<label>Round or stage<input id="round" list="roundNames" maxlength="50" value="'+escape(m.round)+'"></label><datalist id="roundNames">'+opts([...new Set([...state.matches.map(m=>m.round),...Array.from({length:12},(_,i)=>'Week '+(i+1)),'Semi-final','Final'])],m.round)+'</datalist>'+field('Kickoff','kickoff',m.kickoff,'time')+field('Pitch','venue',m.venue)+select('Status','status',['scheduled','live','completed'],m.status)+'</div>'+field('TV / stream URL','stream',m.stream||'','url')+'<button id="openMatch">Edit live match &amp; lineup</button></section>';
 }
 function matchList(section) {
  const rank={live:0,scheduled:1,completed:2};
@@ -318,6 +324,14 @@ root.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b
   const m=match();
   if(!m||m.status==='completed')return;
   m.status=m.status==='scheduled'?'live':'completed';changed();render();await publishDraft();return;
+ }
+ if(b.id==='applyOfficialFixtures'){
+  if(dirty){say('Publish or reload the current draft before applying the official fixture correction.');return}
+  const result=window.boltzOfficialS26?.reconcile(state.matches);
+  if(!result?.changes.length){say('The official opening fixtures are already current, or require manual review.');return}
+  if(!confirm('Update '+result.changes.length+' unplayed fixtures to the official 21 November programme? Existing match activity, squads and archives will be preserved.'))return;
+  state.matches=result.matches;
+  changed();render();await publishDraft();return;
  }
  if(b.id==='reloadRecords'){
   if(dirty&&!confirm('Discard these unpublished changes and reload the last saved records?'))return;
