@@ -39,11 +39,56 @@
   if(data.role!=='referee'||!data.state||!Number.isInteger(data.revision))throw Error('The match service could not confirm the referee session.');
   return data;
  }
+
+ // Fill and publish blanks after an authorized referee connects.
+ // Never store credentials in source or change non-lineup match fields.
+ async function autoStoreLineups(publication,attempt=0) {
+  if(publication?.role!=='referee'||!publication.state||!Number.isInteger(publication.revision))return publication;
+  const factory=window.boltzLineupTemplates;
+  if(!factory||!Array.isArray(publication.state.matches))return publication;
+  const matches=publication.state.matches;
+  const proposed=factory.seedMissing(matches,publication.state.clubs);
+  const affected=proposed.reduce((count,m,i)=>count+(m!==matches[i]?1:0),0);
+  if(!affected){
+   window.boltzLineupAutoSave={status:'current'};
+   return publication;
+  }
+  let acknowledged=null;
+  let updated=null;
+  try{
+   updated={...publication.state,matches:proposed};
+   const res=await api('api/state',{
+    method:'PUT',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({revision:publication.revision,state:updated})
+   });
+   if(res.status===409 && attempt<1)return autoStoreLineups(await readDesk(),attempt+1);
+   const answer=await res.json().catch(()=>({}));
+   if(!res.ok||!Number.isInteger(answer.revision))throw Error(answer.error||'The live database did not confirm the update.');
+   acknowledged=answer.revision;
+   const verified=await readDesk();
+   const missing=verified.state.matches.some(m=>{
+    const source=updated.matches.find(x=>x.id===m.id);
+    if(!source)return false;
+    return [m.home,m.away].some(side=>(source.lineups?.[side]?.length||0)>0 &&
+         !(m.lineups?.[side]?.length));
+   });
+   if(missing)throw Error('The referee service has not confirmed every lineup.');
+   window.boltzLineupAutoSave={status:'saved',fixtures:affected,revision:verified.revision};
+   return verified;
+  }catch(error){
+   window.boltzLineupAutoSave={status:'failed',reason:String(error?.message||'Unable to save missing lineups.')};
+   console.warn('Boltz lineup automatic save could not be verified:',error);
+   // The PUT may already have succeeded even if the final read-back failed.
+   // Retain the acknowledged revision to avoid reverting to stale data.
+   if(acknowledged!==null)return {...publication,state:updated,revision:acknowledged};
+   return publication;
+  }
+ }
  window.boltzRefReady = async () => {
   if(initialState){const state=initialState;initialState=null;return state}
   try{return await readDesk()}catch(error){if(error.expired){disconnect();ask();feedback.textContent=error.message}throw error}
  };
- const moduleURL=new URL('ref-desk/studio.js?v=26.8',document.baseURI);
+ const moduleURL=new URL('ref-desk/studio.js?v=26.9',document.baseURI);
  const cssURL=new URL('ref-desk/studio.css?v=26.8',document.baseURI);
  let editorModule;
  function warmEditor(){return editorModule??=import(moduleURL.href).catch(error=>{editorModule=null;throw error})}
@@ -95,7 +140,9 @@
    const res=await api('api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:password.value})});
    const result=await res.json();if(!res.ok || result.role!=='referee')throw Error(result.error||'Sign-in failed.');
    if(!/^[a-f0-9-]{72}$/.test(result.token||''))throw Error('Could not start the referee session.');
-   setToken(result.token);initialState=result.desk?.role==='referee'&&result.desk.state&&Number.isInteger(result.desk.revision)?result.desk:await readDesk();signedIn=true;formDialog.close();
+   setToken(result.token);
+   const publication=result.desk?.role==='referee'&&result.desk.state&&Number.isInteger(result.desk.revision)?result.desk:await readDesk();
+   initialState=await autoStoreLineups(publication);signedIn=true;formDialog.close();
    if(!route())location.hash='ref';show();
   }catch(err){if(err.expired)setToken('');feedback.textContent=err.message;password.select()}finally{submit.disabled=false;submit.textContent='Sign in'}
  };
@@ -109,7 +156,9 @@
  show();
  if(token){
   const restoring=token;
-  readDesk().then(data=>{
+  readDesk().then(async data=>{
+   if(token!==restoring||signedIn)return;
+   data=await autoStoreLineups(data);
    if(token!==restoring||signedIn)return;
    initialState=data;signedIn=true;show();
    if(formDialog.open)formDialog.close();

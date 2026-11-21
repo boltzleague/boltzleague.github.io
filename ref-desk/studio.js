@@ -586,6 +586,9 @@ async function start(){
  const requested=matchId || query.get('match');
  matchId=state.matches.find(m=>m.id===requested)?.id||state.matches.find(m=>m.status==='live')?.id||state.matches.find(m=>m.status==='scheduled')?.id||state.matches[0]?.id;
  $('publish').hidden=false;$('signout').hidden=embedded||role!=='referee';$('revision').textContent=(role==='owner'?'Owner':'Referee')+' · revision '+revision;say('');render();
+ const auto=window.boltzLineupAutoSave;
+ if(auto?.status==='saved')say('Automatically saved missing lineups in '+auto.fixtures+' fixtures · revision '+auto.revision+'.');
+ if(auto?.status==='failed')say('Automatic lineup save was not verified: '+auto.reason+' You can retry with Fill missing lineups & publish.');
 }
 $('signout').onclick=async()=>{if(dirty&&!confirm('Discard unpublished changes and lock?'))return;const r=await deskFetch('api/logout',{method:'POST'});if(r.ok){dirty=false;location.reload()}};
 
