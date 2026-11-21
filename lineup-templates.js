@@ -28,19 +28,41 @@
   return {lineup:selected,formation:shape,positions,captain:captain||null};
  }
  function seedMissing(matches,clubs,{overwrite=false}={}){
-  const result=matches.map(m=>{
-   const row={...m,lineups:{...(m.lineups||{})},formations:{...(m.formations||{})},positions:{...(m.positions||{})}};
+  const established=new Map();
+  // Prefer a full, registered lineup already configured by a referee.
+  // Never replace a nonempty lineup without an explicit overwrite request.
+  for(const m of matches)for(const team of [m.home,m.away]){
+   if(established.has(team))continue;
+   const registered=new Set(clubs?.[team.replace(/ FC$/,'')]?.players||[]);
+   const names=m.lineups?.[team];
+   const captain=[...registered].find(n=>/\(C\)/i.test(n));
+   if(!Array.isArray(names)||names.length!==7||
+      names.some(n=>!registered.has(n))||
+      new Set(names).size!==7||(captain&&!names.includes(captain)))continue;
+   const fallback=build(clubs,team);
+   const points=m.positions?.[team];
+   established.set(team,{
+    lineup:[...names],
+    formation:m.formations?.[team]||fallback.formation,
+    positions:Array.isArray(points)&&points.length===7&&
+      points.every(p=>names.includes(p.name)&&Number.isFinite(p.x)&&Number.isFinite(p.y))
+       ?points.map(p=>({...p}))
+       :fallback.positions.map((p,i)=>({...p,name:names[i]}))
+   });
+  }
+  return matches.map(m=>{
+   let row=m;
    for(const team of [m.home,m.away]){
-    if(!overwrite && (row.lineups[team]?.length))continue;
-    const template=build(clubs,team);
+    if(!overwrite&&(m.lineups?.[team]?.length))continue;
+    const template=established.get(team)||build(clubs,team);
     if(template.lineup.length<7)continue;
+    if(row===m)row={...m,lineups:{...(m.lineups||{})},formations:{...(m.formations||{})},positions:{...(m.positions||{})}};
     row.lineups[team]=[...template.lineup];
     row.formations[team]=template.formation;
     row.positions[team]=template.positions.map(p=>({...p}));
    }
    return row;
   });
-  return result;
  }
  window.boltzLineupTemplates={build,seedMissing};
 })();
