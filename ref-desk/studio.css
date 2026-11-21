@@ -56,9 +56,9 @@ body.embedded{color:var(--ink,#18212b);background:var(--bg,#f4f6f8)}
 /* Expanded matchday list based on the official matchday sketch */
 .matchExplorer{width:100%;max-width:none;margin:12px 0 24px}
 .matchExplorerHead h3{margin:0 0 4px;font-size:clamp(20px,2.3vw,28px)}
-.matchExplorerHead p,.matchExplorerCount{color:var(--muted,#b4c4d6);font-size:14px;margin:6px 0 14px}
+.matchExplorerHead p,.matchExplorerCount{color:var(--muted,#566573);font-size:14px;margin:6px 0 14px}
 .matchAccordionList{display:flex;flex-direction:column;gap:12px;width:100%}
-.matchAccordion{width:100%;min-width:0;background:var(--panel,#1b2737);border:1px solid var(--rule,#5a6980);border-left:5px solid #98a2af;border-radius:14px;overflow:hidden;box-shadow:0 3px 12px #0001}
+.matchAccordion{width:100%;min-width:0;background:var(--surface,#fff);border:1px solid var(--rule,#d6dce2);border-left:5px solid #98a2af;border-radius:14px;overflow:hidden;box-shadow:0 3px 12px #0001}
 .matchAccordion[data-match-status=live]{border-left-color:#e6474d}
 .matchAccordion[data-match-status=completed]{border-left-color:#2ea96d}
 .matchAccordion[open]{border-color:var(--accent-fill,#ffcf3f);border-left-width:5px;box-shadow:0 8px 22px #0002}
@@ -69,7 +69,7 @@ body.embedded{color:var(--ink,#18212b);background:var(--bg,#f4f6f8)}
 .matchAccordion>summary .teamLabel{font-size:clamp(16px,1.9vw,23px)}
 .matchAccordion>summary .versus{font-size:clamp(15px,1.6vw,22px);min-width:64px;padding:12px}
 .matchAccordion>summary .fixtureMeta,.matchAccordion>summary .fixtureStatus{font-size:14px}
-.matchAccordion>summary .matchAccordionPrompt{grid-column:1/-1;justify-self:start;font-size:13px;font-weight:800;color:var(--muted,#b4c4d6)}
+.matchAccordion>summary .matchAccordionPrompt{grid-column:1/-1;justify-self:start;font-size:13px;font-weight:800;color:var(--muted,#566573)}
 .matchAccordionInner{padding:16px clamp(14px,2.5vw,32px) 26px;border-top:1px solid var(--rule,#5a6980)}
 .matchAccordionInner .matchControl{margin-top:0}
 .matchAccordionInner .matchHeading .matchTeams{gap:16px}
