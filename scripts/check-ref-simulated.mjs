@@ -7,7 +7,7 @@ const origin='https://boltzleague.github.io';
 const backend='boltz-league-matchday.jpiyady.chatgpt.site';
 const token='a'.repeat(72);
 let state=JSON.parse(await readFile('assets/season-content.json','utf8'));
-let revision=1,writeCount=0;
+let revision=1,writeCount=0,rejectRefereeWrites=false;
 const errors=[];
 const browser=await puppeteer.launch({
  executablePath:process.env.CHROME_BIN||'/usr/bin/google-chrome',
@@ -32,6 +32,7 @@ page.on('request',req=>{
   if(path==='/referee/api/ref-state'&&method==='GET'){
    await respond(req,200,req.headers()['x-boltz-session']===token?{role:'referee',revision,state}:{error:'unauthorized'});return}
   if(path==='/referee/api/state'&&method==='PUT'){
+   if(rejectRefereeWrites){await respond(req,403,{error:'Invalid origin.'});return}
    const payload=JSON.parse(req.postData()||'{}');
    if(req.headers()['x-boltz-session']!==token){await respond(req,401,{error:'unauthorized'});return}
    if(payload.revision!==revision){await respond(req,409,{error:'stale revision'});return}
@@ -89,6 +90,24 @@ try{
  const card=await page.$eval('.fixtureDisclosure[data-key="upcoming-s26-1"]',e=>e.innerText);
  assert.ok(card.includes('1'));assert.ok(card.includes('FULL TIME'));
  log('public viewer displays the final match state and score');
+ // Reproduce the user's production failure without modifying the real service.
+ rejectRefereeWrites=true;
+ await page.evaluate(()=>{location.hash='#ref?section=live'});
+ await page.waitForFunction(()=>document.querySelector('#refDeskPanel')?.shadowRoot?.querySelectorAll('.matchAccordion').length===21);
+ await clickShadow('summary[data-accordion-match="s26-2"]');
+ await page.waitForFunction(()=>!!document.querySelector('#refDeskPanel')?.shadowRoot?.querySelector('#matchClock'));
+ await clickShadow('#matchClock');
+ await page.waitForFunction(()=>document.querySelector('#refDeskPanel')?.shadowRoot?.querySelector('#saveNotice')?.textContent.includes('The server-side origin fix has not been deployed yet') ||
+   document.querySelector('#refDeskPanel')?.shadowRoot?.querySelector('#saveNotice')?.textContent.includes('server-side origin fix has not been deployed'),{timeout:10000});
+ assert.equal(state.matches[1].status,'scheduled','Rejected write must not mutate the published backend');
+ const draft=await page.evaluate(()=>{
+  const root=document.querySelector('#refDeskPanel').shadowRoot;
+  return {status:root.querySelector('#revision')?.textContent,
+   warnings:[...root.querySelectorAll('[data-live-minute-id="s26-2"]')].map(e=>e.textContent)};
+ });
+ assert.ok(draft.status.includes('Unpublished changes — save failed'));
+ assert.ok(draft.warnings.some(t=>t.includes('DRAFT')&&!t.includes('LIVE')));
+ log('HTTP 403 keeps the match unpublished and clearly marks the local LIVE state as DRAFT');
  assert.deepEqual(errors,[]);
  log('no uncaught browser or mock API exceptions');
 }finally{
