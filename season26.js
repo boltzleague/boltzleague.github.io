@@ -1,5 +1,16 @@
 'use strict';
 const contenders=['Stacey','CityMen','Infinity','Angels','Foxes','Darkfang','Typhoon'];
+function currentMatchMinute(m){
+ if(m.status!=='live')return null;
+ const started=Date.parse(m.startedAt||'');
+ if(Number.isFinite(started)&&started<=Date.now())return Math.max(0,Math.floor((Date.now()-started)/60000));
+ const minutes=(m.events||[]).map(e=>Number(e.minute)).filter(n=>Number.isFinite(n)&&n>=0&&n<=240);
+ return minutes.length?Math.max(...minutes):null;
+}
+function liveLabel(m){
+ const minute=currentMatchMinute(m);
+ return m.status==='live'?'LIVE'+(minute===null?'':' · '+minute+'′'):m.status==='completed'?'FULL TIME':'UPCOMING';
+}
 function streamFor(match){
   if(match.status!=='live'||!match.stream)return '';
   try{const url=new URL(match.stream);return url.protocol==='https:'?url.href:''}catch{return ''}
@@ -64,7 +75,7 @@ addEventListener('hashchange',()=>setTimeout(scheduleSlide,0));
 renderSlide();scheduleSlide();
 function matchPoster(m,source) {
  const live=m.status==='live' && source==='upcoming';
- const status=live?'LIVE':m.status==='scheduled'?'KICK-OFF':source==='upcoming'?'FULL TIME':'ARCHIVE';
+ const status=live?liveLabel(m):m.status==='scheduled'?'KICK-OFF':source==='upcoming'?'FULL TIME':'ARCHIVE';
  const sides=[m.home,m.away];
  const teamArt=n=>leagueState?.clubs[clean(n)]?.image || (contenders.includes(clean(n))?'/assets/club-'+clean(n)+'.webp':'/assets/hero.webp');
  const score=m.status==='scheduled'?(m.kickoff||'VS'):[m.home_score??'–',m.away_score??'–'].join(' – ');
