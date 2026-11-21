@@ -591,17 +591,13 @@ $('signout').onclick=async()=>{if(dirty&&!confirm('Discard unpublished changes a
 
 const shirtColours = {Stacey:'#8dc9ef', Angels:'#fafafa', CityMen:'#c42c35', Infinity:'#234eac', Foxes:'#e27419', Darkfang:'#292e35', Typhoon:'#257457'};
 function pitchPoints(names, formation, saved = []) {
-  const counts = formation ? [1,...formation.split('-').map(Number)] : [1,2,3,2,3];
-  const rows = [];
-  let used = 0;
-  for (const count of counts) {
-    const row = names.slice(used, used + count);
-    if (row.length) rows.push(row);
-    used += count;
-  }
-  if (used < names.length) rows.push(names.slice(used));
-  return rows.flatMap((row,r) => row.map((name,i) => saved.find(p=>p.name===name) ||
-    {name, x:100*(i+1)/(row.length+1), y:rows.length===1?50:85-r*70/(rows.length-1)}));
+ const seven=names.length===7&&(!formation||formation.split('-').map(Number).reduce((a,b)=>a+b,0)===7);
+ const counts=seven?(formation?formation.split('-').map(Number):[2,3,2]):(formation?[1,...formation.split('-').map(Number)]:[1,2,3,2,3]);
+ const rows=[];let used=0;
+ for(const count of counts){const row=names.slice(used,used+count);if(row.length)rows.push(row);used+=count}
+ if(used<names.length)rows.push(names.slice(used));
+ return rows.flatMap((row,r)=>row.map((name,i)=>saved?.find(p=>p.name===name)||
+  {name,x:100*(i+1)/(row.length+1),y:seven?[22,49,72][Math.min(r,2)]:(rows.length===1?50:85-r*70/(rows.length-1))}));
 }
 function shirtPitch(team, points, encode, editSide) {
   const editable = editSide !== undefined;
@@ -609,6 +605,7 @@ function shirtPitch(team, points, encode, editSide) {
   const shirt = '<svg viewBox="0 0 64 52" aria-hidden="true"><path d="M21 4 8 9 2 24 13 29 17 22 16 48 48 48 47 22 51 29 62 24 56 9 43 4Q32 14 21 4Z" fill="currentColor" stroke="#dee8ee" stroke-width="2"/><path d="M22 5Q32 17 42 5" fill="none" stroke="#66717a" stroke-width="2"/></svg>';
   return '<div class="jerseyPitch" style="--shirt:'+ (shirtColours[team.replace(/ FC$/,'')]||'#788bb7')+'">'+
     points.map(({name,x,y},i)=>'<'+tag+' class="jersey" '+(editable?'type="button" data-position="'+editSide+'" data-index="'+i+'" aria-label="Move '+encode(name)+'"':'')+' style="left:'+x+'%;top:'+y+'%">'+shirt+'<b>'+encode(name)+'</b></'+tag+'>').join('')+
+    (points.length===7?'<span class="jersey keeperPlaceholder" style="left:50%;top:89%" aria-label="Goalkeeper placeholder">'+shirt+'<b>GK</b></span>':'')+
     (points.length?'':'<span class="pitchEmpty">Lineup pending</span>')+'</div>';
 }
 root.addEventListener('click', e=>{
@@ -623,20 +620,39 @@ function positionJersey(el,x,y) {
  const points=pitchPoints(m.lineups[side],m.formations?.[side],m.positions?.[side]);
  const point=points[Number(el.dataset.index)];
  point.x=Math.max(7,Math.min(93,Math.round(x)));point.y=Math.max(7,Math.min(93,Math.round(y)));
- m.positions??={};m.positions[side]=points;
+ m.positions??={};m.positions[side]=points;shareTeamLineup(side,m);
  el.style.left=point.x+'%';el.style.top=point.y+'%';changed();
 }
-let moving;
+let moving=null,dragFrame=0;
+function dragCoordinates(e,jersey){
+ const pitch=jersey.parentElement.getBoundingClientRect();
+ return {x:Math.max(7,Math.min(93,100*(e.clientX-pitch.left)/pitch.width)),y:Math.max(7,Math.min(93,100*(e.clientY-pitch.top)/pitch.height))};
+}
 root.addEventListener('pointerdown',e=>{
- const el=e.target.closest('button.jersey');if(!el||!e.isPrimary||e.button!==0)return;
- moving=el;el.setPointerCapture(e.pointerId);
+ const jersey=e.target.closest('button.jersey');
+ if(!jersey||!e.isPrimary||e.button!==0||busy)return;
+ moving={jersey,id:e.pointerId,originalX:jersey.style.left,originalY:jersey.style.top,dragged:false};
+ jersey.classList.add('is-dragging');jersey.setPointerCapture(e.pointerId);
 });
 root.addEventListener('pointermove',e=>{
- if(!moving?.hasPointerCapture(e.pointerId))return;
- const r=moving.parentElement.getBoundingClientRect();
- positionJersey(moving,100*(e.clientX-r.left)/r.width,100*(e.clientY-r.top)/r.height);
+ if(!moving||e.pointerId!==moving.id)return;
+ const jersey=moving.jersey,where=dragCoordinates(e,jersey);
+ moving.dragged=true;moving.where=where;
+ if(dragFrame)cancelAnimationFrame(dragFrame);
+ dragFrame=requestAnimationFrame(()=>{if(moving?.jersey===jersey){jersey.style.left=where.x+'%';jersey.style.top=where.y+'%'}});
 });
-for(const event of ['pointerup','pointercancel','lostpointercapture'])root.addEventListener(event,()=>moving=null);
+function finishJerseyDrag(e,cancelled=false){
+ if(!moving||e.pointerId!==moving.id)return;
+ const {jersey,dragged,originalX,originalY,where}=moving;
+ moving=null;if(dragFrame){cancelAnimationFrame(dragFrame);dragFrame=0}
+ jersey.classList.remove('is-dragging');
+ if(!cancelled&&dragged&&where)positionJersey(jersey,where.x,where.y);
+ else {jersey.style.left=originalX;jersey.style.top=originalY}
+ if(jersey.hasPointerCapture?.(e.pointerId))jersey.releasePointerCapture(e.pointerId);
+}
+root.addEventListener('pointerup',e=>finishJerseyDrag(e));
+root.addEventListener('pointercancel',e=>finishJerseyDrag(e,true));
+root.addEventListener('lostpointercapture',e=>{if(moving?.id===e.pointerId)finishJerseyDrag(e,true)});
 root.addEventListener('keydown',e=>{
  if(e.target.id==='newEventPlayerName'&&e.key==='Enter'&&!e.isComposing){
   e.preventDefault();if(!busy)addEventPlayer();return;

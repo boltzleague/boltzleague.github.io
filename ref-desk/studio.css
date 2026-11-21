@@ -80,3 +80,10 @@ body.embedded{color:var(--ink,#18212b);background:var(--bg,#f4f6f8)}
 .matchCompleteLabel{font-size:16px}
 @media(max-width:650px){.matchAccordion>summary{padding:16px 12px;grid-template-columns:1fr;gap:10px}.matchAccordion>summary .matchTeams{gap:8px}.matchAccordion>summary .teamLabel{font-size:15px}.matchAccordion>summary .versus{min-width:48px;padding:9px 7px}.matchAccordion>summary .matchAccordionPrompt{grid-column:auto}.matchAccordionInner{padding:14px 10px 20px}.matchLifecycle{gap:5px}.matchLifecycle li{font-size:11px;padding:8px 4px}}
 @media(prefers-reduced-motion:no-preference){.matchAccordion[open] .matchAccordionInner{animation:matchExpand .2s ease both}@keyframes matchExpand{from{opacity:.6;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}}
+
+/* 8-a-side GK placeholder; ease outfield jerseys when released. */
+.jerseyPitch .keeperPlaceholder{pointer-events:none;opacity:.96}
+.jerseyPitch .keeperPlaceholder b{background:#0b2538;color:#fff}
+.jerseyPitch button.jersey{touch-action:none;transition:left .23s cubic-bezier(.2,.8,.2,1),top .23s cubic-bezier(.2,.8,.2,1),transform .18s ease,filter .18s ease;will-change:left,top,transform}
+.jerseyPitch button.jersey.is-dragging{z-index:10;cursor:grabbing;transition:transform .1s ease,filter .1s ease;transform:translate(-50%,-50%) scale(1.17);filter:drop-shadow(0 6px 6px #0008)}
+@media(prefers-reduced-motion:reduce){.jerseyPitch button.jersey{transition:none!important}}
