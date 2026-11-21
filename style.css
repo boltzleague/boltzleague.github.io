@@ -39,3 +39,13 @@ body[data-theme=midnight]{--bg:#0b1326;--ink:#eaf3ff;--surface:#17263d;--rule:#3
  @keyframes matchLiveSwatch{0%,100%{background:#bd2936}50%{background:#ff6570}}
 }
 @media(max-width:690px){.matchStatusLegend{gap:9px 14px;padding:10px}.matchLegendItem{font-size:12px}}
+
+/* Fail visibly when the live feed cannot be reached; never silently present seed fixtures as confirmed live data. */
+.leagueFeedNotice{display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:min(1344px,90%);margin:18px auto;padding:10px 14px;border-radius:10px;border:1px solid var(--rule);background:var(--surface);font-size:13px;line-height:1.5}
+.leagueFeedNotice strong{font-weight:800}
+.leagueFeedNotice span{flex:1;min-width:170px}
+.leagueFeedNotice[data-connection=online]{border-left:5px solid #28a56c}
+.leagueFeedNotice[data-connection=connecting]{border-left:5px solid #8994a5}
+.leagueFeedNotice[data-connection=offline]{border-left:5px solid #d4474d}
+.leagueFeedNotice button{border:1px solid var(--rule);border-radius:6px;background:var(--bg);padding:6px 12px;font-weight:800}
+@media(max-width:640px){.leagueFeedNotice{width:100%;margin:10px 0;padding:10px 12px}.leagueFeedNotice span{flex-basis:100%}}

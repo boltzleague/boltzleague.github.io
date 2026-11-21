@@ -1,4 +1,21 @@
-let leagueState,leagueRevision=-1,pendingLeague=false;
+let leagueState,leagueRevision=-1,pendingLeague=false,leagueRefreshQueued=false;
+let leagueFeed={status:'connecting',lastVerified:null,reason:''};
+window.boltzLeagueFeed=()=>({...leagueFeed});
+function leagueFeedBanner(){
+ const state=leagueFeed.status;
+ const label=state==='online'?'Live data connected':state==='offline'?'Live updates unavailable':'Checking live scores…';
+ const detail=state==='online'?'Fixtures, live scores and results are connected to the referee service.':
+   state==='offline'?'Showing the last available fixture data. Matches shown as upcoming may already be live. Automatic retries are running.':
+   'Connecting to the referee service for the latest match statuses.';
+ return '<div class="leagueFeedNotice" data-connection="'+state+'" role="status" aria-live="polite"><strong>'+label+'</strong><span>'+detail+'</span>'+
+   (state==='offline'?'<button type="button" id="retryLiveFeed">Retry live feed</button>':'')+'</div>';
+}
+function leagueFeedUpdate(status,reason=''){
+ const previous=leagueFeed.status;
+ leagueFeed={status,reason,lastVerified:status==='online'?new Date().toISOString():leagueFeed.lastVerified};
+ if(previous!==status && typeof draw==='function' && typeof data!=='undefined' && data?.upcoming)draw();
+}
+
 // Matchday authority: reconcile only the four superseded, unplayed opening fixtures.
 // Do not rewrite matches with recorded activity or future deliberate changes.
 const officialS26Opening = [
@@ -32,7 +49,7 @@ function applyLeague(s){
  leagueState=tournament && /^season\s+6\.?$/i.test(tournament.name.trim())
    ? {...resolved,tournament:{...tournament,name:'Season 26'}} : resolved;
  data.upcoming=resolved.matches.map(m=>{
-  const scores=[m.home,m.away].map(n=>m.events.filter(e=>(e.type==='goal'&&e.team===n)||(e.type==='own goal'&&e.team!==n)).length);
+  const scores=[m.home,m.away].map(n=>(m.events||[]).filter(e=>(e.type==='goal'&&e.team===n)||(e.type==='own goal'&&e.team!==n)).length);
   return {...m,home_score:scores[0],away_score:scores[1]};
  });
  const layout=s.presentation;
@@ -41,24 +58,42 @@ function applyLeague(s){
  const footer=document.querySelector('footer .foot > span');if(footer)footer.textContent=layout?.footer||'SOFTTED Football';
  renderSlide();draw();
 }
-async function syncLeague() {
- if (pendingLeague || document.hidden) return;
- pendingLeague = true;
- try {
-  const response = await fetch('https://boltz-league-matchday.jpiyady.chatgpt.site/api/league', {cache:'no-store', credentials:'omit'});
-  if (!response.ok) return;
-  const {revision,state} = await response.json();
-  if (revision === leagueRevision) return;
-  const media=p=>p?.startsWith('/media/')?'https://boltz-league-matchday.jpiyady.chatgpt.site'+p:p;
-  const clubs=Object.fromEntries(Object.entries(state.clubs).map(([name,c])=>[name,{...c,image:media(c.image),scene:c.scene&&{...c.scene,poster:media(c.scene.poster),clip:media(c.scene.clip)}}]));
-  applyLeague({...state,clubs,features:state.features.map(f=>({...f,image:media(f.image)}))});
-  leagueRevision = revision;
- } catch {
-  // The bundled programme stays available if the live feed is offline.
- } finally {
-  pendingLeague = false;
+async function syncLeague(){
+ if(pendingLeague){leagueRefreshQueued=true;return false;}
+ if(document.hidden)return false;
+ pendingLeague=true;
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),11000);
+ try{
+  // A unique query prevents an intervening CDN cache from serving stale scores.
+  const url='https://boltz-league-matchday.jpiyady.chatgpt.site/api/league?at='+Date.now();
+  const response=await fetch(url,{cache:'no-store',credentials:'omit',headers:{Accept:'application/json'},signal:controller.signal});
+  if(!response.ok)throw Error('Live service responded HTTP '+response.status);
+  const payload=await response.json();
+  if(!payload?.state||!Array.isArray(payload.state.matches)||!payload.state.clubs||!Array.isArray(payload.state.features)||
+    !Number.isInteger(payload.revision))throw Error('Unexpected live-feed response');
+  const {revision,state}=payload;
+  const wasOffline=leagueFeed.status!=='online';
+  if(revision!==leagueRevision||wasOffline){
+   const media=p=>p?.startsWith('/media/')?'https://boltz-league-matchday.jpiyady.chatgpt.site'+p:p;
+   const clubs=Object.fromEntries(Object.entries(state.clubs).map(([name,c])=>[name,{...c,image:media(c.image),
+    scene:c.scene&&{...c.scene,poster:media(c.scene.poster),clip:media(c.scene.clip)}}]));
+   // A malformed feed should never replace the last good live data.
+   applyLeague({...state,clubs,features:state.features.map(f=>({...f,image:media(f.image)}))});
+   leagueRevision=revision;
+  }
+  leagueFeedUpdate('online');
+  return true;
+ }catch(error){
+  leagueFeedUpdate('offline',String(error?.message||'Connection failed'));
+  return false;
+ }finally{
+  clearTimeout(timeout);
+  pendingLeague=false;
+  if(leagueRefreshQueued){leagueRefreshQueued=false;queueMicrotask(()=>syncLeague());}
  }
 }
+window.syncLeague=syncLeague;
 function publishedLeaders(metric){
  const players=new Map();
  for(const m of data.upcoming){for(const e of m.events){
