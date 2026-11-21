@@ -139,8 +139,8 @@
   },
   "matches": [
     {
-      "home": "Stacey FC",
-      "away": "Darkfang FC",
+      "home": "Typhoon FC",
+      "away": "CityMen FC",
       "round": "Round 1",
       "venue": "Pitch 1",
       "kickoff": "13:00",
@@ -151,8 +151,8 @@
       "stream": ""
     },
     {
-      "home": "Foxes FC",
-      "away": "Infinity FC",
+      "home": "Infinity FC",
+      "away": "Stacey FC",
       "round": "Round 1",
       "venue": "Pitch 2",
       "kickoff": "13:00",
@@ -163,8 +163,8 @@
       "stream": ""
     },
     {
-      "home": "CityMen FC",
-      "away": "Typhoon FC",
+      "home": "Foxes FC",
+      "away": "Darkfang FC",
       "round": "Round 1",
       "venue": "Pitch 1",
       "kickoff": "13:15",
@@ -175,7 +175,7 @@
       "stream": ""
     },
     {
-      "home": "Infinity FC",
+      "home": "Stacey FC",
       "away": "Angels FC",
       "round": "Round 2",
       "venue": "Pitch 2",
