@@ -23,3 +23,8 @@
 @media(max-width:720px){.refNav nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}.refNav a{padding:.4rem .15rem;white-space:normal;justify-content:center;text-align:center;line-height:1.15}#refLogin input{font-size:16px}.in-ref #refWorkspace{padding-top:12px}}
 
 .refNav a[aria-current=page]{box-shadow:inset 0 -3px var(--accent-fill);font-weight:800}
+
+#refLogin button.is-signing-in{display:inline-flex;align-items:center;gap:9px;cursor:progress}
+#refLogin button.is-signing-in:before{content:'';display:inline-block;width:13px;height:13px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:refSignInSpin .65s linear infinite}
+@keyframes refSignInSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#refLogin button.is-signing-in:before{animation:none}}

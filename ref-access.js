@@ -88,8 +88,8 @@
   if(initialState){const state=initialState;initialState=null;return state}
   try{return await readDesk()}catch(error){if(error.expired){disconnect();ask();feedback.textContent=error.message}throw error}
  };
- const moduleURL=new URL('ref-desk/studio.js?v=27.2',document.baseURI);
- const cssURL=new URL('ref-desk/studio.css?v=27.1',document.baseURI);
+ const moduleURL=new URL('ref-desk/studio.js?v=27.3',document.baseURI);
+ const cssURL=new URL('ref-desk/studio.css?v=27.2',document.baseURI);
  let editorModule;
  function warmEditor(){return editorModule??=import(moduleURL.href).catch(error=>{editorModule=null;throw error})}
  password.enterKeyHint='go';
@@ -135,7 +135,7 @@
  formDialog.addEventListener('close',()=>{password.value=''});
  form.onsubmit=async e=>{
   e.preventDefault();const submit=form.querySelector('[type=submit]');if(submit.disabled)return;submit.disabled=true;submit.textContent='Signing in…';
-  feedback.textContent='Checking password…';
+  feedback.textContent='';submit.classList.add('is-signing-in');
   try {
    const res=await api('api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:password.value})});
    const result=await res.json();if(!res.ok || result.role!=='referee')throw Error(result.error||'Sign-in failed.');
@@ -144,7 +144,7 @@
    const publication=result.desk?.role==='referee'&&result.desk.state&&Number.isInteger(result.desk.revision)?result.desk:await readDesk();
    initialState=await autoStoreLineups(publication);signedIn=true;formDialog.close();
    if(!route())location.hash='ref';show();
-  }catch(err){if(err.expired)setToken('');feedback.textContent=err.message;password.select()}finally{submit.disabled=false;submit.textContent='Sign in'}
+  }catch(err){if(err.expired)setToken('');feedback.textContent=err.message;password.select()}finally{submit.disabled=false;submit.classList.remove('is-signing-in');submit.textContent='Sign in'}
  };
  logout.onclick=async()=>{
   if(desk?.dirty() && !confirm('Discard unpublished changes and log out?'))return;

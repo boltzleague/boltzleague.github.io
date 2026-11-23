@@ -94,3 +94,14 @@ body.embedded{color:var(--ink,#18212b);background:var(--bg,#f4f6f8)}
 #saveNotice[data-kind=success]{background:#124d35;border-color:#2ca26b;color:white}
 #saveNotice[data-kind=error]{background:#792b32;border-color:#e66c76;color:white}
 #saveNotice[data-kind=working]{background:#24364b;border-color:#ffd04a;color:white}
+
+/* Action is still the verified save path; visual pulse does not imply publication success. */
+#addEvent.pushLiveButton,.embedded #addEvent.pushLiveButton{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#1db963,#087b43);color:#fff;border:1px solid #47da85;border-radius:11px;font-weight:850;letter-spacing:.02em;padding:12px 19px;min-height:46px;box-shadow:0 6px 18px #13864b44;transition:transform .18s ease,box-shadow .18s ease}
+#addEvent.pushLiveButton:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 10px 25px #158e4e66}
+#addEvent.pushLiveButton .pushLiveSignal{height:10px;width:10px;border-radius:50%;background:#d9ffe6;box-shadow:0 0 0 0 #b5ffd180;animation:pushLivePulse 1.7s ease-out infinite}
+#addEvent.pushLiveButton .pushLiveArrow{font-size:20px;line-height:1}
+#addEvent.pushLiveButton:disabled{opacity:.64;cursor:progress}
+@keyframes pushLivePulse{0%{box-shadow:0 0 0 0 #b5ffd1aa}70%{box-shadow:0 0 0 9px #b5ffd100}100%{box-shadow:0 0 0 0 #b5ffd100}}
+#saveNotice{transition:opacity .28s ease,transform .28s ease}
+#saveNotice.is-hiding{opacity:0;transform:translate(-50%,12px);pointer-events:none}
+@media(prefers-reduced-motion:reduce){#addEvent.pushLiveButton .pushLiveSignal{animation:none}#saveNotice{transition:none}}

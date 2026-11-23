@@ -94,6 +94,7 @@ const sectionTabs={teams:'Teams & squads',fixtures:'Fixtures',live:'Live matches
 const tabs=[...Object.values(sectionTabs),'Homepage','Navigation'];
 let state,revision,publishedBaseline,dirty=false,busy=false,restoreSeasonStart=false,tab=sectionTabs[query.get('section')] || (query.has('match')?'Live matches':tabs[0]),club='Foxes',matchId,feature=0,eventSide,editEvent;
 let matchTeamFilter='',matchStatusFilter='',matchSortOrder='status',chooserOpen=false,expandedMatchId=query.get('match')||null,completedEditMatchId=null;
+let noticeTimer=null,noticeHideTimer=null;
 if(!inline)window.boltzRefDirty=()=>dirty;
 const say=v=>$('feedback').textContent=v;
 const match=()=>state.matches.find(m=>m.id===matchId);
@@ -377,7 +378,7 @@ function eventForm(e){
    '<div class="row"><button type="button" id="addNameToEvent">Add and select</button><button type="button" id="cancelEventPlayer">Cancel</button></div>'+
    '<p class="hint">The player joins this team’s squad when the event is published.</p></div>'+
    '<div role="status" id="eventFeedback" class="eventFeedback"></div>'+
-   '<button type="submit" id="addEvent">'+(editEvent?'Update &amp; publish event':'Add &amp; publish event')+'</button></form>';
+   '<button type="submit" id="addEvent" class="pushLiveButton" aria-label="'+(editEvent?'Update event and push to live':'Add event and push to live')+'"><span class="pushLiveSignal" aria-hidden="true"></span><span>Push to Live</span><span aria-hidden="true" class="pushLiveArrow">↗</span></button></form>';
 }
 function editEventMessage(message){$('eventFeedback').textContent=message}
 function updateEventFields(){
@@ -616,12 +617,26 @@ async function saveEvent(){
  await publishDraft();
 }
 function publishNotice(message,type='working'){
+ clearTimeout(noticeTimer);clearTimeout(noticeHideTimer);
  let banner=root.querySelector('#saveNotice');
  if(!banner){
   banner=document.createElement('div');banner.id='saveNotice';banner.setAttribute('role','status');
   banner.setAttribute('aria-live','polite');root.append(banner);
  }
+ banner.classList.remove('is-hiding');
  banner.dataset.kind=type;banner.textContent=message;banner.hidden=false;
+ if(type==='success'){
+  noticeTimer=setTimeout(()=>{
+   if(lifetime.signal.aborted||banner.dataset.kind!=='success'||banner.textContent!==message)return;
+   banner.classList.add('is-hiding');
+   noticeHideTimer=setTimeout(()=>{
+    if(banner.dataset.kind!=='success'||banner.textContent!==message)return;
+    banner.hidden=true;banner.classList.remove('is-hiding');
+    if($('feedback')?.textContent===message)$('feedback').textContent='';
+    if($('revision')?.textContent.startsWith('Verified published'))$('revision').textContent='Viewing live database · revision '+revision;
+   },280);
+  },4400);
+ }
 }
 async function readVerifiedSeason(){
  const response=await deskFetch('api/ref-state',{cache:'no-store'});
@@ -819,7 +834,7 @@ root.addEventListener('keydown',e=>{
 });
 
  const ready=start().catch(e=>{say(e.message);throw e});
- return {ready, dirty:()=>dirty, busy:()=>busy, destroy:()=>lifetime.abort(), navigate(section,id){
+ return {ready, dirty:()=>dirty, busy:()=>busy, destroy:()=>{clearTimeout(noticeTimer);clearTimeout(noticeHideTimer);lifetime.abort()}, navigate(section,id){
   tab=sectionTabs[section] || (id?'Live matches':sectionTabs.teams);
   if(id&&state.matches.some(m=>m.id===id))matchId=id;
   if(tab==='Live matches'){livePanel='logging';expandedMatchId=id||expandedMatchId;}
