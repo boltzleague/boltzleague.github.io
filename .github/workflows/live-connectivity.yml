@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Probe GitHub Pages and live referee API without credentials
         run: node scripts/check-live-connectivity.mjs
       - name: Install headless browser test client
@@ -21,3 +21,11 @@ jobs:
         run: node scripts/check-browser.mjs
       - name: Exercise simulated referee-to-publication lifecycle
         run: node scripts/check-ref-simulated.mjs
+      - uses: actions/checkout@v4
+        with:
+          repository: JohnBarsisa/boltz-league-admin
+          path: .backend
+      - name: Exercise actual gateway and worker with isolated SQLite in Chrome
+        run: node scripts/check-ref-worker.mjs
+      - name: Verify concurrent client merge behavior
+        run: node scripts/check-ref-merge.mjs

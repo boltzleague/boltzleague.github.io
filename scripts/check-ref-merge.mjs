@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const src=fs.readFileSync('ref-desk/studio.js','utf8').split("'use strict';")[0];
+const {merge,has}=new Function(src+';return {merge:boltzMergeDraft,has:boltzPatchPresent}')();
+const base={matches:[{id:'one',status:'scheduled',events:[]},{id:'two',status:'scheduled',events:[]}],clubs:{}};
+let local=structuredClone(base),remote=structuredClone(base);
+local.matches[0].status='live';remote.matches[1].status='live';
+let r=merge(base,local,remote);assert.deepEqual(r.conflicts,[]);assert.ok(r.state.matches.every(m=>m.status==='live'));assert.ok(has(base,local,r.state));
+remote.matches[0].status='completed';r=merge(base,local,remote);assert.ok(r.conflicts.includes('matches.one.status'));
+local=structuredClone(base);remote=structuredClone(base);local.matches[0].events=[{id:'a'}];remote.matches[0].events=[{id:'b'}];r=merge(base,local,remote);assert.ok(r.conflicts.includes('matches.one.events'));assert.equal(has(base,local,remote),false);
+console.log('PASS client merge: independent fixtures preserved, same-field and event conflicts rejected, read-back detects missing updates');

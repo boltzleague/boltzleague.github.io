@@ -26,7 +26,7 @@
   const headers = new Headers(options.headers);
   headers.set('X-Boltz-Client','match-centre');
   if(token)headers.set('X-Boltz-Session',token);
-  const response = await fetch(service+'/referee/'+path, {...options,headers,credentials:pagesHost?'omit':'same-origin',cache:'no-store'});
+  const response = await fetch(service+'/referee/'+path, {...options,signal:options.signal||AbortSignal.timeout(15000),headers,credentials:pagesHost?'omit':'same-origin',cache:'no-store'});
   if (path==='api/state' && options.method==='PUT' && response.ok) window.syncLeague?.();
   return response;
  }
