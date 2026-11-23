@@ -65,22 +65,56 @@ try{
  assert.equal(state.matches[0].status,'live');assert.ok(writeCount>=1);
  log('Start Match PUT is saved, read back and verified as Live');
  await page.waitForFunction(()=>!!document.querySelector('#refDeskPanel')?.shadowRoot?.querySelector('#player'));
+ const actionLabel=await page.evaluate(()=>document.querySelector('#refDeskPanel').shadowRoot.querySelector('#addEvent')?.textContent.trim());
+ assert.match(actionLabel,/Push to Live/,'Match event action must say Push to Live');
+ log('Push to Live action appears in referee logging');
  await page.evaluate(()=>{
   const root=document.querySelector('#refDeskPanel').shadowRoot;
   const player=root.querySelector('#player');player.value='Timo';player.dispatchEvent(new Event('change',{bubbles:true}));
+  const assist=root.querySelector('#assist');assist.value='Ahmed';assist.dispatchEvent(new Event('change',{bubbles:true}));
   root.querySelector('#eventForm').requestSubmit();
  });
  await page.waitForFunction(()=>document.querySelector('#refDeskPanel')?.shadowRoot?.querySelector('#revision')?.textContent.includes('Verified published'));
  assert.equal(state.matches[0].events.length,1);assert.equal(state.matches[0].events[0].player,'Timo');
- log('Goal event automatically publishes and is verified');
+ assert.equal(state.matches[0].events[0].assist,'Ahmed');
+ log('Home goal with assist automatically publishes and verifies');
+ await clickShadow('[data-event-team="CityMen FC"]');
+ await page.waitForFunction(()=>document.querySelector('#refDeskPanel')?.shadowRoot?.querySelector('[data-event-team="CityMen FC"]')?.getAttribute('aria-pressed')==='true');
+ await page.evaluate(()=>{
+  const root=document.querySelector('#refDeskPanel').shadowRoot;
+  const player=root.querySelector('#player');player.value='Abz';player.dispatchEvent(new Event('change',{bubbles:true}));
+  root.querySelector('#eventForm').requestSubmit();
+ });
+ await page.waitForFunction(()=>document.querySelector('#refDeskPanel')?.shadowRoot?.querySelector('#revision')?.textContent.includes('Verified published'));
+ assert.equal(state.matches[0].events.length,2,'Second away goal should publish');
+ assert.equal(state.matches[0].events[1].team,'CityMen FC');
+ log('Away goal automatically publishes and verifies');
  await clickShadow('#matchClock');
  await page.waitForFunction(()=>document.querySelector('#refDeskPanel')?.shadowRoot?.querySelector('#revision')?.textContent.includes('Verified published'));
  assert.equal(state.matches[0].status,'completed');
  log('End Match publishes a completed result');
+ await page.waitForFunction(()=>document.querySelector('#refDeskPanel')?.shadowRoot?.querySelector('#saveNotice')?.hidden===true,{timeout:8000});
+ log('verified success notice dismisses automatically');
  await page.evaluate(()=>{location.hash='#matches'});
  await page.waitForFunction(()=>document.querySelector('.fixtureDisclosure[data-key="upcoming-s26-1"]')?.dataset.matchState==='completed');
  const card=await page.$eval('.fixtureDisclosure[data-key="upcoming-s26-1"]',e=>e.innerText);
  assert.ok(card.includes('1'));assert.ok(card.includes('FULL TIME'));
+ await page.click('.fixtureDisclosure[data-key="upcoming-s26-1"] summary');
+ await page.waitForFunction(()=>!!document.querySelector('.fixtureDisclosure[data-key="upcoming-s26-1"] .timelineAway .timelineGoal'));
+ const timeline=await page.evaluate(()=>{
+  const el=document.querySelector('.fixtureDisclosure[data-key="upcoming-s26-1"]');
+  return {rows:el.querySelectorAll('.matchTimelineRow').length,
+   home:el.querySelector('.timelineHome .timelineGoal')?.textContent,
+   away:el.querySelector('.timelineAway .timelineGoal')?.textContent,
+   assist:el.querySelector('.timelineHome .timelineAssist')?.textContent,
+   boot:!!el.querySelector('.timelineHome .timelineBoot')};
+ });
+ assert.equal(timeline.rows,2);
+ assert.ok(timeline.home.includes('Timo'));
+ assert.ok(timeline.away.includes('Abz'));
+ assert.ok(timeline.assist.includes('Ahmed'));
+ assert.ok(timeline.boot,'Assist boot must appear under home scorer');
+ log('viewer aligns goals home/away and nests the assist under scorer');
  log('public viewer displays the final match state and score');
  // Reproduce the user's production failure without modifying the real service.
  rejectRefereeWrites=true;
