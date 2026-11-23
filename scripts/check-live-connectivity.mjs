@@ -75,7 +75,21 @@ async function checkRefereePreflight(){
    '; methods='+JSON.stringify(methods)+'; headers='+JSON.stringify(headers));
  }catch(error){record('Referee PUT preflight',false,String(error))}
 }
-await Promise.all([checkPages(),checkPublicFeed(),checkRefereePreflight()]);
+async function checkGuestAccess(){
+ const common={Origin:origin,'X-Boltz-Client':'match-centre',Accept:'application/json'};
+ try{
+  const {response}=await get(backend+'/referee/api/access',{headers:common});
+  const body=response.headers.get('content-type')?.includes('json')?await response.json():null;
+  record('Production guest access',response.status===200&&body?.role==='guest',
+   'HTTP '+response.status+'; role='+JSON.stringify(body?.role||'(missing)'));
+ }catch(error){record('Production guest access',false,String(error))}
+ try{
+  const {response}=await get(backend+'/referee/api/ref-state',{headers:common});
+  record('Production unauthenticated referee state denied',response.status===401,
+   'HTTP '+response.status+'; no session token sent');
+ }catch(error){record('Production unauthenticated referee state denied',false,String(error))}
+}
+await Promise.all([checkPages(),checkPublicFeed(),checkRefereePreflight(),checkGuestAccess()]);
 const failed=results.filter(x=>!x.ok);
 console.log('\nSUMMARY: '+(results.length-failed.length)+'/'+results.length+' read-only checks passed.');
 if(failed.length){
