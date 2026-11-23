@@ -29,3 +29,5 @@ jobs:
         run: node scripts/check-ref-worker.mjs
       - name: Verify concurrent client merge behavior
         run: node scripts/check-ref-merge.mjs
+      - name: Verify deployed backend commit against GitHub (read-only)
+        run: node .backend/service/scripts/verify-production.mjs "$(git -C .backend rev-parse HEAD)"
